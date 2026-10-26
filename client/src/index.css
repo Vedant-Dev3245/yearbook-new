@@ -1,0 +1,292 @@
+::-webkit-scrollbar {
+  width: 12px;
+  background-color: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  box-shadow: inset 0 0 6px rgba(62, 62, 62, 0.3);
+  background-color: #6b6b6b;
+}
+
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(47, 47, 47, 0.3);
+  border-radius: 20px;
+  background-color: #141414;
+}
+
+html {
+  background-color: #130e1f;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.clockTower > div:nth-child(1) {
+  animation: float 7s infinite;
+}
+
+.clockTower > div:nth-child(2) {
+  animation: float 3s infinite;
+}
+
+.clockTower > div:nth-child(3) {
+  animation: float 5s infinite;
+}
+
+.clockTower > div:nth-child(4) {
+  animation: float 4s infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+.template {
+  display: block;
+  position: absolute;
+  width: 28rem;
+  right: 110vw;
+  top: -20rem;
+}
+
+.video {
+  border-radius: 50px;
+  height: 29.5rem;
+}
+.devText{
+  text-transform: lowercase;
+}
+
+.navProf {
+  background: linear-gradient(
+    90deg,
+    rgba(251, 251, 251, 0.1) 0%,
+    rgba(251, 251, 251, 0.1) 100%
+  );
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0px 1px 24px 1px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(40px);
+  border-radius: 10px;
+}
+.borderBox {
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  z-index: 1;
+}
+.pencil {
+  background: rgba(32, 148, 255, 0.25);
+  border: 1.068px solid #e1d4d4;
+  backdrop-filter: blur(25px);
+  border-radius: 50%;
+}
+
+.active {
+  transition: all 0.3s;
+}
+.wall.active {
+  border-bottom: 2px solid #2094ff;
+}
+.wall.active > svg {
+  color: #2094ff;
+}
+.nomin.active {
+  border-bottom: 2px solid #653fa8;
+}
+.nomin.active > svg {
+  color: #653fa8;
+}
+.notif.active {
+  border-bottom: 2px solid #ffc62d;
+}
+.notif.active > svg {
+  color: #ffc62d;
+}
+.polls.active {
+  border-bottom: 2px solid #22ff00;
+}
+.polls.active > svg {
+  color: #22ff00;
+}
+.stats.active {
+  border-bottom: 2px solid #ff6842;
+}
+.stats.active > svg {
+  color: #ff6842;
+}
+
+.my-masonry-grid {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin-top: 4rem;
+  margin-inline: auto;
+  width: 100%;
+}
+
+.my-masonry-grid_column {
+  padding-left: 1.5rem;
+  background-clip: padding-box;
+}
+
+/* Style your items */
+.my-masonry-grid_column > div {
+  /* change div to reference your elements you put in <Masonry> */
+  margin-bottom: 1.5rem;
+}
+.my-masonry-grid_column2 > div {
+  /* change div to reference your elements you put in <Masonry> */
+  margin-bottom: 4rem;
+  margin-inline: auto;
+}
+
+.selectOpt__control {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+.selectProf {
+  width: 100% !important;
+}
+.selectOpt__single-value {
+  color: #dae6ff !important;
+}
+.selectOpt__input-container {
+  color: #dae6ff !important;
+}
+
+/* .ellipses {
+  width: 0 !important;
+} */
+
+.selectOpt__option {
+  background-color: #262734 !important;
+  color: wheat;
+}
+.selectOpt__menu-list {
+  background-color: #262734 !important;
+}
+.selectProfNom {
+  width: 40% !important;
+}
+.voteFriend {
+  width: 100% !important;
+}
+.selectOptNom__single-value {
+  color: #dae6ff !important;
+}
+.selectOptNom__input-container {
+  color: #dae6ff !important;
+}
+
+.selectOptNom__option {
+  background-color: #130c1e !important;
+  color: wheat;
+}
+.selectOpt__input-control:focus {
+  box-shadow: none !important;
+}
+.selectOptNom__menu-list {
+  background-color: #130c1e !important;
+}
+.selectOptNom__control {
+  background-color: #130c1e !important;
+  border: 1px solid #6c6c6c !important;
+}
+.barItems {
+  margin-inline: 1rem;
+}
+.selectOpt__control--is-focused {
+  box-shadow: none !important;
+}
+
+@media (max-width: 510px) {
+  .searchIcon {
+    width: 65% !important;
+    background: transparent !important;
+  }
+  .imageCont {
+    width: 12rem !important;
+    height: 12rem !important;
+  }
+  .infoFlex {
+    flex-direction: column;
+  }
+  .selectProfNom {
+    width: 80% !important;
+  }
+  .barItems {
+    width: 80% !important;
+    justify-content: center !important;
+  }
+  .video {
+    height: 15.7rem !important;
+    border-radius: 25px;
+  }
+  .my-masonry-grid_column {
+    padding-left: 0;
+  }
+  .devColumn {
+    width: 23rem !important;
+  }
+}
+@media (min-width: 510px) and (max-width: 600px) {
+  .devColumn {
+    width: 20rem !important;
+  }
+}
+@media (max-width: 600px) {
+  .devName {
+    font-size: 1.5rem !important;
+  }
+  .devCaption {
+    font-size: 0.9rem !important;
+  }
+  .devText {
+    font-size: 0.8rem !important;
+    height: auto;
+  }
+}
+
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* #chakra-modal-editModal{
+  width: 40rem !important;
+} */
+/* .chakra-modal__overlay{
+  width: 100vw !important;
+    height: 100vh !important;
+} */
+.chakra-modal__content-container {
+  align-items: center !important;
+}
+
+@media (max-width: 1460px) {
+  .workHeading {
+    font-size: 1.4rem !important;
+    line-height: 1.8rem !important;
+  }
+  .workInfo {
+    font-size: 1rem !important;
+    line-height: 1.1rem !important;
+  }
+}

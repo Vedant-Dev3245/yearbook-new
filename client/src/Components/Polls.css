@@ -1,0 +1,111 @@
+.pollscardsprops {
+  /* background-color: rgba(21, 21, 21, 0.3); */
+  box-shadow: 2px 2px 2px rgb(255, 255, 255, 0.2);
+  border-radius: 24px;
+  font-family: "gilmer";
+  border: solid 1px rgb(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.pollscardsprops {
+  padding: 10%;
+}
+
+.pollsqns {
+  font-family: "Gilmer";
+  font-style: normal;
+  text-transform: lowercase;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 24px;
+  letter-spacing: 0.02em;
+}
+
+.pollsnumber {
+  margin-top: -5rem;
+  font-family: "Gilmer";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 3rem;
+}
+
+.pollscards {
+  padding: 5%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 50px;
+  width: 100%;
+}
+
+.dropdownpolls {
+  margin: auto;
+  padding: 10%;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+@media screen and (max-width: 480px) {
+  .pollscards {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .pollsnumber {
+    width: 60px;
+    height: 58px;
+    margin-top: -56px;
+    font-family: "Gilmer";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 48px;
+    line-height: 58px;
+  }
+}
+
+@media screen and (max-width: 720px) {
+  .pollscards {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .pollsnumber {
+    width: 60px;
+    height: 58px;
+    margin-top: -64px;
+    font-family: "Gilmer";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 48px;
+    line-height: 58px;
+  }
+}
+@media screen and (max-width: 730px) {
+  .pollscards {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .pollsnumber {
+    width: 60px;
+    height: 58px;
+    margin-top: -70px;
+    font-family: "Gilmer";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 48px;
+    line-height: 58px;
+  }
+}
+@media screen and (max-width: 768px) {
+  .pollscards {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .pollsnumber {
+    width: 100% !important;
+    height: 58px;
+    margin-top: -70px;
+    font-family: "Gilmer";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 48px;
+    line-height: 58px;
+  }
+}

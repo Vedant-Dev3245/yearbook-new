@@ -1,0 +1,194 @@
+.topvoted {
+  border-radius: 10px;
+  border: 1px solid #6c6c6c;
+  box-shadow: 0px 1px 24px 1px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(20px);
+  padding: 8vh;
+  padding-bottom: 0.5vh;
+  padding-top: 0.5vh;
+  font-weight: 800;
+}
+
+.topvbox {
+  width: fit-content;
+  margin: auto;
+}
+
+.topvoted h1 {
+  color: #fff;
+  font-family: "gilmer";
+  font-size: calc(30px + 0.390625vw);
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-align: center;
+}
+
+.img-count {
+  display: flex;
+  align-items: center;
+}
+
+.img img {
+  border-radius: 50%;
+  height: 8rem;
+  width: 8rem;
+  margin: auto;
+  border: solid 1px white;
+  margin-top: -15vh;
+  border-radius: 156.462px;
+  padding-right: 0;
+}
+.img {
+  padding-bottom: 4%;
+}
+.count {
+  position: absolute;
+  top: 20px;
+  right: 40px;
+  display: grid;
+  grid-gap: 10px;
+  align-items: center;
+}
+
+.statscard {
+  position: relative;
+  box-shadow: 2px 2px 2px rgba(255, 255, 255, 0.3);
+  border-radius: 24px;
+  font-family: "gilmer";
+  border: solid 1px rgba(255, 255, 255, 0.1);
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.statsContent {
+  padding: 5%;
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.bitsid {
+  color: #b3b3b3;
+  text-align: center;
+  font-family: Gilmer;
+  margin-top: 0.4rem;
+  font-style: normal;
+  font-weight: 300;
+  line-height: normal;
+  opacity: 0.75;
+}
+
+.name {
+  text-transform: lowercase;
+  font-size: 2rem;
+}
+
+.statscard {
+  padding: 2rem;
+  width: 30%;
+  margin-inline: 1%;
+  margin-bottom: 8rem;
+}
+
+.pollqn {
+  color: #dcedfb;
+  font-family: "Gilmer";
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: 0.4px;
+  margin-top: 1rem;
+}
+
+@media screen and (max-width: 520px) {
+  .stats {
+    padding-top: 30%;
+  }
+  .statscontent {
+    padding: 5%;
+  }
+  .name {
+    font-size: 2.1rem;
+  }
+  .bitsid {
+    font-size: 1rem;
+  }
+  .img img {
+    padding-top: -30%;
+    border-radius: 50%;
+    height: 150px;
+    width: 150px;
+    border: solid 1px white;
+    padding-right: 0;
+  }
+
+  .name {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .bitsid {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .count {
+    position: absolute;
+    top: 80px;
+    right: 80px;
+    display: grid;
+    grid-gap: 10px;
+    align-items: center;
+  }
+  .pollqn {
+    font-size: 1.2rem;
+  }
+}
+@media screen and (max-width: 768px) {
+  .statscard {
+    padding-top: 20%;
+    width: 100%;
+    margin-inline: auto;
+    margin-top: 4rem;
+  }
+  .img img {
+    padding-top: -30%;
+    border-radius: 50%;
+    height: 120px;
+    width: 120px;
+    border: solid 1px white;
+    padding-right: 0;
+  }
+  .count {
+    top: 40px;
+    right: 28px;
+  }
+}
+@media screen and (max-width: 720px) {
+  .stats {
+    padding-top: 20%;
+  }
+  .statscard {
+    width: 100%;
+    margin-inline: auto;
+    margin-bottom: 3rem !important;
+  }
+}
+@media screen and (max-width: 730px) {
+  .stats {
+    padding-top: 20%;
+  }
+}
+@media screen and (max-width: 1156px) {
+  .stats {
+    padding-top: 20%;
+  }
+  .statscard {
+    margin: auto;
+  }
+}
