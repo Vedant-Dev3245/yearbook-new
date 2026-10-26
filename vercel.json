@@ -2,10 +2,8 @@
   "installCommand": "npm install && npm install --prefix client",
   "buildCommand": "REACT_APP_BACKEND_URL=/api CI=false npm run build --prefix client",
   "outputDirectory": "client/build",
-  "functions": {
-    "api/[...path].js": { "maxDuration": 30 }
-  },
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
