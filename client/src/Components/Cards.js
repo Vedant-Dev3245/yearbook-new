@@ -3,7 +3,7 @@ import React from "react";
 import { thumb } from "../cloudinary";
 import html2canvas from "html2canvas";
 import Template from "./Template";
-import { FiInstagram } from "react-icons/fi";
+import { FiDownload } from "react-icons/fi";
 import LikeButton from "./LikeButton";
 
 export default function Cards(props) {
@@ -117,7 +117,7 @@ export default function Cards(props) {
           (left out of the PDF export) */}
       <Flex id="hide-for-pdf" mt="0.9rem" align="center" justify="space-between">
         {ownProfile ? (
-          <FiInstagram
+          <FiDownload
             onClick={handleDownloadImage}
             fontSize="1.5rem"
             cursor="pointer"
