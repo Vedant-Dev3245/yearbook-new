@@ -39,7 +39,7 @@ export default function OptIn(){
                      >
                     <Box fontSize={isSmallerThan800 ? "1.6rem" : "3rem"} fontWeight="700" mt={isSmallerThan800?"3rem":"4rem"}>opt-in for the <Box display="inline" fontStyle="italic" fontFamily="EB Garamond">physical</Box> yearbook <Image src="../images/clinking-glasses.png" display="inline" height={8}></Image></Box>
                     <Box color="#C9C8C8" mt={isSmallerThan800 ? "-1rem" : 0} fontSize={isSmallerThan800 ? "1rem" : "1.4rem"}>get physical copy. cherish it for the years to come.</Box>
-                    <Link  href="https://docs.google.com/forms/d/e/1FAIpQLScWyCTQZ8Lh6ZqHO4Rn7RswBjjOn3kKiLFh9HDPgHmztsqIOA/viewform?usp=publish-editor" target="_blank"><Button disabled={isDisabled} className="phyButton" mt={"2rem !important"} marginBottom={isSmallerThan800?"2rem !important":"2rem !important"} fontSize="1.2rem" color="black" fontWeight="700"> {isDisabled ? "sign in to opt in" : "yes, i do need yearbook irl"} <ArrowForwardIcon /> </Button> </Link>
+                    <Link  href="https://docs.google.com/forms/d/e/1FAIpQLScfkUTeHTClFclCfLU50CPvcwfwiss7cfJD8f_UxMfAqS5J3Q/viewform?usp=publish-editor" target="_blank"><Button disabled={isDisabled} className="phyButton" mt={"2rem !important"} marginBottom={isSmallerThan800?"2rem !important":"2rem !important"} fontSize="1.2rem" color="black" fontWeight="700"> {isDisabled ? "sign in to opt in" : "yes, i do need yearbook irl"} <ArrowForwardIcon /> </Button> </Link>
                     </VStack>
             </Box>
     )

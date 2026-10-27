@@ -520,7 +520,7 @@ export default function ProfileInfo(props) {
           borderRadius="20px"
           fontWeight="700"
           id="hide-for-pdf"
-          onClick={() => ownProfile ? window.open('https://docs.google.com/forms/d/e/1FAIpQLScWyCTQZ8Lh6ZqHO4Rn7RswBjjOn3kKiLFh9HDPgHmztsqIOA/viewform', '_blank') : onWriteOpen()}
+          onClick={() => ownProfile ? window.open('https://docs.google.com/forms/d/e/1FAIpQLScfkUTeHTClFclCfLU50CPvcwfwiss7cfJD8f_UxMfAqS5J3Q/viewform?usp=publish-editor', '_blank') : onWriteOpen()}
         >
           {ownProfile ? "opt-in for the yearbook!" : "write on their wall"}
         </Box> 
