@@ -70,7 +70,7 @@ export default function LikeButton({
       toast({
         description:
           status === 401 || status === 403
-            ? serverMsg || "please log in again to like captions"
+            ? serverMsg || "please log in again to like quotes"
             : serverMsg || "couldn't update your like, try again",
         status: "error",
         duration: 2500,
@@ -119,7 +119,7 @@ export default function LikeButton({
       type="button"
       onClick={toggle}
       aria-pressed={want}
-      aria-label={want ? "unlike this caption" : "like this caption"}
+      aria-label={want ? "unlike this quote" : "like this quote"}
       align="center"
       gap="0.4rem"
       p="0.3rem 0.7rem"

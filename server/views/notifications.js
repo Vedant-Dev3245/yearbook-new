@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const { Notification } = require("../models/notification");
 const { Caption } = require("../models/caption");
 const { User } = require("../models/user");
+const { Nomination } = require("../models/nomination");
 
 // A writer is notified when their caption reaches one of these like counts.
 const LIKE_MILESTONES = [1, 5, 10, 25, 50, 100];
@@ -75,9 +76,15 @@ const getNotifications = async (req, res) => {
             .filter((n) => n.caption && n.caption.status === 1)
             .map((n) => n.toJSON());
 
+        // friends who nominated you and you haven't opened the tab since
+        const nominationUnread = await Nomination.count({
+            where: { targetID: req.user.id, status: 0, readAt: { [Op.is]: null } },
+        });
+
         return res.status(200).send({
             status: "success",
             unreadCount: items.filter((n) => !n.readAt).length,
+            nominationUnread,
             items,
         });
     } catch (err) {
@@ -95,6 +102,10 @@ const markNotificationsRead = async (req, res) => {
         await Notification.update(
             { readAt: new Date() },
             { where: { userID: req.user.id, readAt: { [Op.is]: null } } }
+        );
+        await Nomination.update(
+            { readAt: new Date() },
+            { where: { targetID: req.user.id, readAt: { [Op.is]: null } } }
         );
         return res.status(200).send({ status: "success" });
     } catch (err) {

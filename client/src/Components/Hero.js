@@ -68,7 +68,7 @@ export default function Hero() {
             
           >
             the yearbook portal is a gateway to your college memories where you
-            can post crazy pictures and interesting captions for yourselves and
+            can post crazy pictures and interesting quotes for yourselves and
             your friends. it is an effort by the Student Alumni Relations Cell
             to help you relive your college life and capture those beautiful
             memories that you shared with your seniors, batchies and juniors.
@@ -121,7 +121,7 @@ export default function Hero() {
                   color="#B3B3B3"
                   fontWeight="500"
                 >
-                  captions in 2025
+                  quotes in 2025
                 </Text>
               </Box>
               <Box w="70%">

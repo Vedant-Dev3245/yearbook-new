@@ -15,7 +15,7 @@ export default function ReqCard(props) {
   const [busy, setBusy] = React.useState(false);
   const toast = useToast();
 
-  // kind: "nominate" = approve the caption, "decline" = reject it
+  // kind: "nominate" = approve the quote, "decline" = reject it
   function respond(kind) {
     if (busy) return;
     setBusy(true);
@@ -29,7 +29,7 @@ export default function ReqCard(props) {
     })
       .then(function () {
         toast({
-          title: kind === "nominate" ? "caption approved ✓" : "caption declined",
+          title: kind === "nominate" ? "quote approved ✓" : "quote declined",
           description: kind === "nominate" ? "it's now on your wall" : undefined,
           status: kind === "nominate" ? "success" : "info",
           position: "top",

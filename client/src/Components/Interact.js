@@ -30,11 +30,11 @@ const Interact = forwardRef((props, ref) => {
   const [isSmallerThan800] = useMediaQuery("(max-width:800px)");
   const [ownProfile, setOwnProfile] = React.useState();
   // recent activity (new captions on your wall, like milestones on captions you wrote)
-  const [notifs, setNotifs] = React.useState({ items: [], unreadCount: 0 });
-  // captions other people wrote for you that are waiting for your approval
+  const [notifs, setNotifs] = React.useState({ items: [], unreadCount: 0, nominationUnread: 0 });
+  // quotes other people wrote for you that are waiting for your approval
   const [requests, setRequests] = React.useState([]);
-  // number shown on the bell: unread activity + captions waiting for approval
-  const badgeCount = notifs.unreadCount + requests.length;
+  // number shown on the bell: unread activity + unread nominations + quotes waiting for approval
+  const badgeCount = notifs.unreadCount + notifs.nominationUnread + requests.length;
   const notifActiveRef = React.useRef(false);
   React.useEffect(() => {
     notifActiveRef.current = notifActive;
@@ -47,7 +47,7 @@ const Interact = forwardRef((props, ref) => {
       headers: { Authorization: `Bearer ${localStorage.token}` },
       url: `${process.env.REACT_APP_BACKEND_URL}/notifications/read`,
     }).catch(() => {});
-    setNotifs((n) => ({ ...n, unreadCount: 0 }));
+    setNotifs((n) => ({ ...n, unreadCount: 0, nominationUnread: 0 }));
   }
 
   // Called by a request card after approve / decline.
@@ -91,8 +91,12 @@ const Interact = forwardRef((props, ref) => {
       })
         .then((response) => {
           if (!cancelled && response.data && response.data.items) {
-            const unread = response.data.unreadCount || 0;
-            setNotifs({ items: response.data.items, unreadCount: unread });
+            const unread = (response.data.unreadCount || 0) + (response.data.nominationUnread || 0);
+            setNotifs({
+              items: response.data.items,
+              unreadCount: response.data.unreadCount || 0,
+              nominationUnread: response.data.nominationUnread || 0,
+            });
             // the tab is already open (opened before this arrived): it counts as seen
             if (notifActiveRef.current && unread > 0) markNotifsRead();
           }
@@ -151,7 +155,7 @@ const Interact = forwardRef((props, ref) => {
     document.querySelector(".notif").classList.add("active");
 
     // opening the tab counts as reading
-    if (notifs.unreadCount > 0) markNotifsRead();
+    if (notifs.unreadCount + notifs.nominationUnread > 0) markNotifsRead();
   }
 
   function makePollsActive() {

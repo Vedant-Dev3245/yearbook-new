@@ -74,7 +74,7 @@ export default function Wall(props) {
           >
             nominate
           </Text>{" "}
-          your friends to write a caption for you
+          your friends to write a quote for you
         </Box>
         <Box
           fontSize={isSmallerThan800 ? "1.5rem" : "3rem"}
@@ -83,7 +83,7 @@ export default function Wall(props) {
         >
           hey, you should write a{" "}
           <Text display={"inline"} fontFamily="EB Garamond" fontStyle="italic">
-            caption
+            quote
           </Text>{" "}
           for your friend, <br /> ask them to{" "}
           <Text display={"inline"} fontFamily="EB Garamond" fontStyle="italic">

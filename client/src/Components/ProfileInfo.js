@@ -198,18 +198,13 @@ export default function ProfileInfo(props) {
       return;
     }
 
-    // if this person already nominated you, your caption goes straight to their wall;
-    // otherwise it goes to them as a request for approval.
-    const direct = (localStorage.getItem("nominatedBy") || "").includes(props.userid);
-
+    // every quote goes to them as a request for approval
     axios({
       method: "POST",
       headers: {
         Authorization: `Bearer ${localStorage.token}`,
       },
-      url: direct
-        ? `${process.env.REACT_APP_BACKEND_URL}/profiles/${props.userid}/caption`
-        : `${process.env.REACT_APP_BACKEND_URL}/nominations/requests`,
+      url: `${process.env.REACT_APP_BACKEND_URL}/nominations/requests`,
       data: {
         caption: captionData,
         targetId: props.userid,
@@ -219,22 +214,14 @@ export default function ProfileInfo(props) {
         console.log(res);
         writeModalClose();
         setCaptionData("");
-        // the server says whether it went straight to the wall or is waiting for approval
-        const posted = res.data && res.data.approved !== undefined ? res.data.approved : direct;
         toast({
-          title: posted ? "posted on their wall ✓" : "sent for approval ✓",
-          description: posted
-            ? undefined
-            : "they'll see it in their notifications and can approve it",
+          title: "sent for approval ✓",
+          description: "they'll see it in their notifications and can approve it",
           status: "success",
           position: "top",
           duration: 4000,
           isClosable: true,
         });
-        if (posted) {
-          if (props.onRefresh) props.onRefresh();
-          else window.location.reload();
-        }
       })
       .catch(function (err) {
         console.log(err);
@@ -645,7 +632,7 @@ export default function ProfileInfo(props) {
             p="1.4rem"
           >
             <ModalHeader mt="2rem" fontSize="2rem">
-              write caption for {props.name}
+              write quote for {props.name}
             </ModalHeader>
             <ModalCloseButton />
             <ModalBody mt="0.5rem" fontSize="1rem" w="100%">
@@ -653,7 +640,7 @@ export default function ProfileInfo(props) {
                 type="text"
                 name="caption"
                 maxLength="1000"
-                placeholder="enter your caption!"
+                placeholder="enter your quote!"
                 onChange={handleChangeRequest}
                 value={captionData}
               />
@@ -661,7 +648,7 @@ export default function ProfileInfo(props) {
                 {captionData?.length || 0}/1000 characters used
               </Text>
               <Text fontWeight="600" color="#B3B3B3" mt="1rem">
-                You must accept these guidelines before writing a caption<br /><br />
+                You must accept these guidelines before writing a quote<br /><br />
                 1. The quote must only be written in English. Refrain from using any other script or emojis.<br />
                 2. Offensive quotes will not be accepted. Your quote must not defame or criticize any individual.<br />
                 3. Please refrain from using any expletives.<br />

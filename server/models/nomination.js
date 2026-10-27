@@ -25,6 +25,12 @@ const Nomination = postgresClient.define(
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0
+        },
+
+        // when the nominated person first opened their notifications tab (null = unread)
+        readAt: {
+            type: DataTypes.DATE,
+            allowNull: true
         }
     },
 

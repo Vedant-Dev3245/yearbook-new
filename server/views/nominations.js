@@ -15,10 +15,10 @@ const jwt = require("jsonwebtoken");
 const Filter = require("bad-words");
 const words = require("../bad-words.json");
 
-// A person can write on someone's wall more than once.
-//  - If that person already nominated you, your caption goes straight to their wall.
-//  - Otherwise it is a request for approval, and you can only have ONE waiting at a time.
-//    Once it is approved (or declined) you can send another.
+// A person can write on someone's wall more than once, but EVERY quote is a request
+// that the wall owner has to approve (being nominated does not skip approval).
+// You can only have ONE request waiting at a time. Once it is approved (or declined)
+// you can send another.
 const sendRequest = async (req, res) => {
   try {
     const senderID = req.user.id;
@@ -37,7 +37,7 @@ const sendRequest = async (req, res) => {
       console.log("[sendRequest Route] There is no caption sent");
       return res.status(400).send({
         status: "failure",
-        message: "Please enter a caption",
+        message: "Please enter a quote",
       });
     }
     caption = String(caption).trim().slice(0, 1000);
@@ -52,32 +52,7 @@ const sendRequest = async (req, res) => {
       });
     }
 
-    // Did the target already nominate the sender? Then no approval is needed.
-    const nomination = await Nomination.findOne({where: {
-      nominatorID: targetID,
-      targetID: senderID
-    }});
-
-    if (nomination) {
-      const posted = await Caption.create({
-        writerID: senderID,
-        targetID: targetID,
-        caption: caption,
-        status: 1
-      });
-
-      nomination.status = 1;
-      await nomination.save();
-      await recordNewCaption(posted);
-
-      return res.status(200).send({
-        status: "success",
-        approved: true,
-        message: "Caption posted on their wall",
-      });
-    }
-
-    // Not nominated: only one request can be waiting for approval at a time.
+    // Only one request can be waiting for approval at a time.
     const pending = await Caption.findOne({where: {
       writerID: senderID,
       targetID: targetID,
@@ -87,7 +62,7 @@ const sendRequest = async (req, res) => {
     if (pending) {
       return res.status(409).send({
         status: "failure",
-        message: "You already have a caption waiting for approval. You can send another once it's approved or declined.",
+        message: "You already have a quote waiting for approval. You can send another once it's approved or declined.",
       });
     }
 
@@ -97,6 +72,18 @@ const sendRequest = async (req, res) => {
       caption: caption,
       status: 0
     });
+
+    // If the target had nominated the sender, this request answers that invitation,
+    // so the "wants you to write a quote" card goes away.
+    const nomination = await Nomination.findOne({where: {
+      nominatorID: targetID,
+      targetID: senderID,
+      status: 0
+    }});
+    if (nomination) {
+      nomination.status = 1;
+      await nomination.save();
+    }
 
     console.log("[sendRequest Route] Request sent succesfully: ", new_caption.toJSON());
 
@@ -202,7 +189,7 @@ const nominateUser = async (req, res) => {
       console.log("Target has already been nominated!!");
       return res.status(403).send({
         status: "failure",
-        message: "You've already nominated this person (approving their caption request does this automatically).",
+        message: "You've already nominated this person (approving their quote request does this automatically).",
       });
     }
 
@@ -223,7 +210,7 @@ const nominateUser = async (req, res) => {
       console.log("Caption updated to approved status.");
       return res.status(200).send({
         status: "success",
-        message: "Target has been nominated and Caption approved"
+        message: "Target has been nominated and quote approved"
       });
     }
 

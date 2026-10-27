@@ -11,7 +11,7 @@ const findLikeableCaption = async (req, res) => {
     const { captionID } = req.params;
 
     if (!UUID_RE.test(captionID)) {
-        res.status(400).send({ status: "failure", message: "Invalid caption" });
+        res.status(400).send({ status: "failure", message: "Invalid quote" });
         return null;
     }
 
@@ -21,13 +21,13 @@ const findLikeableCaption = async (req, res) => {
 
     // only captions that are actually visible on a wall (status 1 = accepted) can be liked
     if (!caption || caption.status !== 1) {
-        res.status(404).send({ status: "failure", message: "Caption not found" });
+        res.status(404).send({ status: "failure", message: "Quote not found" });
         return null;
     }
 
     // you can't like what you wrote yourself
     if (caption.writerID === req.user.id) {
-        res.status(403).send({ status: "failure", message: "You can't like your own caption" });
+        res.status(403).send({ status: "failure", message: "You can't like your own quote" });
         return null;
     }
 
@@ -71,7 +71,7 @@ const unlikeCaption = async (req, res) => {
     try {
         const { captionID } = req.params;
         if (!UUID_RE.test(captionID)) {
-            return res.status(400).send({ status: "failure", message: "Invalid caption" });
+            return res.status(400).send({ status: "failure", message: "Invalid quote" });
         }
 
         await Like.destroy({ where: { userID: req.user.id, captionID } });

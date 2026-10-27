@@ -15,6 +15,7 @@ import {
   AlertIcon,
   Textarea,
   Checkbox,
+  useToast,
 } from "@chakra-ui/react";
 import React from "react";
 import { useEffect } from "react";
@@ -31,6 +32,8 @@ export default function NominateCard(props) {
   const [msg, setMsg] = React.useState("");
   const [res, setRes] = React.useState(false);
   const navigate = useNavigate();
+  const toast = useToast();
+  const [done, setDone] = React.useState(false);
   const [submitToggle, setSubmitToggle] = React.useState(true);
   const handleClose = () => {
     setIsOpen(false);
@@ -67,26 +70,38 @@ export default function NominateCard(props) {
       headers: {
         Authorization: `Bearer ${localStorage.token}`,
       },
-      url: `${process.env.REACT_APP_BACKEND_URL}/profiles/${captionData.receiverId}/caption`,
-      data: captionData,
+      url: `${process.env.REACT_APP_BACKEND_URL}/nominations/requests`,
+      data: { caption: captionData.caption, targetId: props.id },
     })
-      .then(function (response) {
-        console.log(response);
+      .then(function () {
         setIsOpen(false);
-        setMsg(response.data.success);
-        navigate(`/profile/${props.id}`);
-        setRes(true);
-        setTimeout(() => {
-          setRes(false);
-        }, 3000);
+        // this invitation is answered, so the card goes away
+        setDone(true);
+        toast({
+          title: "sent for approval ✓",
+          description: "they'll see it in their notifications and can approve it",
+          status: "success",
+          position: "top",
+          duration: 4000,
+          isClosable: true,
+        });
       })
       .catch(function (error) {
         console.log(error);
+        const d = error.response && error.response.data;
+        toast({
+          description: (d && (d.message || d.error)) || "couldn't send, try again",
+          status: "error",
+          position: "top",
+          duration: 4000,
+          isClosable: true,
+        });
       });
     // console.log(captionData);
   }
 
   const [isOpen, setIsOpen] = React.useState(false);
+  if (done) return null;
   return (
     <Flex
       bg="#151515"
@@ -119,6 +134,9 @@ export default function NominateCard(props) {
         {msg}
       </Alert>
       <Flex alignItems="center" gap="0.6rem" flexWrap="wrap">
+        {props.unread && (
+          <Box flexShrink={0} h="0.6rem" w="0.6rem" borderRadius="50%" bg="#FF6187" />
+        )}
         <Flex
           bgColor={"rgba(255, 255, 255, 0.05)"}
           border="1px solid rgba(255, 255, 255, 0.25)"
@@ -139,7 +157,7 @@ export default function NominateCard(props) {
           p="0.15rem 0.6rem"
           whiteSpace="nowrap"
         >
-          wants you to write a caption
+          wants you to write a quote
         </Text>
       </Flex>
       <Box
@@ -175,18 +193,18 @@ export default function NominateCard(props) {
           p="1.4rem"
         >
           <ModalHeader mt="2rem" fontSize="2rem">
-            write caption for {props.name}
+            write quote for {props.name}
           </ModalHeader>
           <ModalCloseButton onClick={handleClose} />
           <ModalBody mt="0.5rem" fontSize="1rem" w="100%">
             <Textarea
               type="text"
               name="caption"
-              placeholder="enter your caption!"
+              placeholder="enter your quote!"
               onChange={handleChange}
             />
             <Text fontWeight="600" color="#B3B3B3" mt="1rem">
-              You must accept these guidelines before writing a caption
+              You must accept these guidelines before writing a quote
               <br />
               <br />
               1. The quote must only be written in English. Refrain from using

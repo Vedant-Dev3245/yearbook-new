@@ -10,6 +10,7 @@ const {Poll} = require('../models/poll');
 const {Vote} = require('../models/vote');
 const { decorateCaptions } = require('./likes');
 const { recordNewCaption } = require('./notifications');
+const { sendRequest } = require('./nominations');
 const { Like } = require('../models/like');
 
 const jwt = require("jsonwebtoken");
@@ -364,82 +365,11 @@ const searchAllUsers = async (req, res) => {
   }
 };
 
+// Writing on a wall always goes through the approval request, even for a nominated friend.
+// (Kept as its own route so older clients keep working; it just hands over to sendRequest.)
 const writeCaption = async (req, res) => {
-  try {
-    var caption = req.body.caption;
-    const writerID = req.user.id;
-    const targetID = req.params.id;
-
-    if (writerID == targetID) {
-      return res.status(403).send({
-        status: "failure",
-        message: "You can't write for yourself",
-      });
-    }
-
-    const nomination = await Nomination.findOne({where: {
-      [Op.and]: [
-        {targetID: writerID},
-        {nominatorID: targetID}
-      ]
-    }});
-
-    if (!nomination) {
-      console.log("[writeCaption Route] User not nominated to write for target");
-      return res.status(403).send({
-        status: "failure",
-        message: "You're not nominated to write the caption!"
-      });
-    }
-
-    if (caption == null || String(caption).trim() === "") {
-      return res.status(400).send({
-        status: "failure",
-        message: "Please enter a valid caption!",
-        error: "Please enter a valid caption!",
-      });
-    }
-    caption = String(caption).trim().slice(0, 1000);
-
-    const receiver = await User.findByPk(targetID);
-
-    if (!receiver) {
-      console.log("[writeCaption Route] The target doesn't exist");
-      return res.status(403).send({
-        status: "failure",
-        message: "The target user doesn't exist"
-      });
-    }
-
-    // every caption is its own entry now (no more overwriting the earlier one)
-    const newcaption = await Caption.create({
-      writerID: writerID,
-      targetID: targetID,
-      caption: caption,
-      status: 1
-    });
-
-    nomination.status = 1;
-    await nomination.save();
-
-    await recordNewCaption(newcaption);
-
-    console.log("The caption was created: ", newcaption);
-
-    return res.status(200).send({
-      status: "success",
-      approved: true,
-      message: "Caption was created successfully",
-      caption: newcaption
-    });
-  } catch (err) {
-    console.log("[writeCaption Route] There was an error: ", err);
-    return res.status(500).send({
-      status: "failure",
-      message: "There was an error, Please try after some time",
-      error: err
-    });
-  }
+  req.body = { ...(req.body || {}), targetId: req.params.id };
+  return sendRequest(req, res);
 };
 
 

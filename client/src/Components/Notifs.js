@@ -58,7 +58,7 @@ function ActivityCard({ item, onClick }) {
       <Box flex="1" lineHeight="1.3rem" fontSize="1rem" color="#FFFFFF" fontWeight="400">
         {isLike ? (
           <>
-            your caption for{" "}
+            your quote for{" "}
             <Text as="span" fontWeight="700">{target}</Text>{" "}
             {item.count === 1 ? "got its first like" : `got ${item.count} likes`}
           </>
@@ -101,13 +101,13 @@ export default function Nominate(props) {
           <Box {...headingStyle}>
             do you want to write some{" "}
             <Text display="inline" fontFamily="EB Garamond" fontStyle="italic">
-              captions
+              quotes
             </Text>
             ?
           </Box>
         ) : (
           <Text color="#B3B3B3" fontSize="1.2rem" fontWeight="600">
-            nothing here yet. when friends like the captions you write, you'll see it here.
+            nothing here yet. when friends like the quotes you write, you'll see it here.
           </Text>
         )
       ) : (
@@ -126,7 +126,7 @@ export default function Nominate(props) {
             mt="2rem"
             w={isSmallerThan800 ? "100%" : "70%"}
           >
-            {/* captions waiting for your approval */}
+            {/* quotes waiting for your approval */}
             {shownRequests.map((person) => (
               <ReqCard
                 key={person.captionID}
@@ -138,16 +138,17 @@ export default function Nominate(props) {
               />
             ))}
 
-            {/* friends who nominated you to write a caption for them */}
+            {/* friends who nominated you to write a quote for them */}
             {shownNominations.map((person) => (
               <NominateCard
                 name={person.nominator.name.toLowerCase()}
                 key={person.nominator.userID}
                 id={person.nominator.userID}
+                unread={!person.readAt}
               />
             ))}
 
-            {/* new captions and like milestones */}
+            {/* new quotes and like milestones */}
             {activity.map((item) => (
               <ActivityCard
                 key={item.notificationID}
