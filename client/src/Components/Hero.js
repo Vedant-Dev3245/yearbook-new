@@ -113,7 +113,7 @@ export default function Hero() {
                   fontSize={isSmallerThan900 ? "1.3rem" : "2.8rem"}
                   fontWeight="800"
                 >
-                  3k+
+                  3.5k+
                 </Text>
                 <Text
                   mt="-0.5rem"
@@ -121,7 +121,7 @@ export default function Hero() {
                   color="#B3B3B3"
                   fontWeight="500"
                 >
-                  captions in 2024
+                  captions in 2025
                 </Text>
               </Box>
               <Box w="70%">
@@ -159,7 +159,7 @@ export default function Hero() {
                   fontSize={isSmallerThan900 ? "1.3rem" : "2.8rem"}
                   fontWeight="800"
                 >
-                  1.2k+
+                  1.4k+
                 </Text>
                 <Text
                   mt="-0.5rem"
@@ -183,7 +183,7 @@ export default function Hero() {
                   color="#B3B3B3"
                   fontWeight="500"
                 >
-                  visits in 2024
+                  visits in 2025
                 </Text>
               </Box>
             </Flex>
