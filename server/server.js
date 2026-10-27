@@ -20,14 +20,16 @@ const port = process.env.PORT || 3001;
 // Connect + create missing tables once per server instance (retried if it fails).
 let dbReady = null;
 function ensureDb() {
+  // Table creation is slow (many round trips), so it only runs when DB_SYNC=true
+  // (set it once when the tables change, then remove it). Normal requests skip it.
+  if (process.env.DB_SYNC !== "true") return Promise.resolve();
   if (!dbReady) {
     dbReady = (async () => {
       await postgresClient.authenticate();
-      console.log("Connection has been established succesfully");
       await alterSync(postgresClient);
       console.log("Models have been synced succesfully");
     })().catch((err) => {
-      dbReady = null; // allow a retry on the next request
+      dbReady = null;
       throw err;
     });
   }

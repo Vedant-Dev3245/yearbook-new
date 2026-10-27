@@ -3,7 +3,16 @@
   "buildCommand": "REACT_APP_BACKEND_URL=/api CI=false npm run build --prefix client",
   "outputDirectory": "client/build",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" },
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    {
+      "source": "/api/(.*)",
+      "destination": "/api"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "regions": [
+    "sin1"
   ]
 }

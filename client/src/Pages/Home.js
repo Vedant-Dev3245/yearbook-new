@@ -18,6 +18,7 @@ export default function Home() {
     var userObject = jwtDecode(response.credential);
     var token = response.credential;
     localStorage.setItem("token", token);
+    setLoading(true);
     console.log("📤 Sending token to backend..."); 
     axios({
       method: "POST",
@@ -44,6 +45,9 @@ export default function Home() {
           // navigate("/junior", { state: userObject });
         }
       }
+    }).catch(function () {
+      setLoading(false);
+      alert("Login failed. Please try again in a moment.");
     });
   }
   React.useEffect(() => {
@@ -52,7 +56,7 @@ export default function Home() {
     if (localStorage.getItem("user") === null) {
       google.accounts.id.initialize({
         client_id:
-          "82672622767-auemisd62etgdqec278abeb9gubq6lt2.apps.googleusercontent.com",
+          "1050493483344-ardfhdeca71u0v4758micitopt027jnr.apps.googleusercontent.com",
         callback: handleCallbackResponse,
       });
 
