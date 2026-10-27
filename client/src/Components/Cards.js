@@ -1,64 +1,55 @@
-import { Box, Flex, Text, useMediaQuery, Image } from "@chakra-ui/react";
+import { Box, Flex, Text, Image } from "@chakra-ui/react";
 import React from "react";
 import { thumb } from "../cloudinary";
 import html2canvas from "html2canvas";
 import Template from "./Template";
 import { FiInstagram } from "react-icons/fi";
 import LikeButton from "./LikeButton";
+
 export default function Cards(props) {
-  const [isSmallerThan800] = useMediaQuery("(max-width:800px)");
-  const [ownProfile, setOwnProfile] = React.useState("");
-  const handleShareInsta = async () => {
+  const [ownProfile, setOwnProfile] = React.useState(false);
+
+  // download the quote card as a PNG image
+  const handleDownloadImage = async () => {
     const templateElement =
       document.getElementsByClassName("template")[props.index];
-    templateElement.style.display = "block";
-    if (templateElement) {
-      try {
-        const canvas = await html2canvas(templateElement, {
-          useCORS: true,
-          allowTaint: true,
-        });
 
-        canvas.toBlob(async (blob) => {
-          if (blob) {
-            const filesArray = [
-              new File([blob], "insta-story.png", { type: "image/png" }),
-            ];
-
-            const shareData = {
-              files: filesArray,
-            };
-
-            if (navigator.canShare && navigator.canShare(shareData)) {
-              try {
-                await navigator.share(shareData);
-                console.log("Shared successfully!");
-              } catch (error) {
-                console.error("Error sharing:", error);
-              }
-            } else {
-              // desktop can't open Instagram, so save the image instead
-              const link = document.createElement("a");
-              link.href = URL.createObjectURL(blob);
-              link.download = "yearbook-quote.png";
-              link.click();
-              URL.revokeObjectURL(link.href);
-            }
-            templateElement.style.display = "none";
-          } else {
-            console.log("Failed to convert HTML to image.");
-            templateElement.style.display = "none";
-          }
-        });
-      } catch (error) {
-        console.error("Error converting HTML to image:", error);
-      }
-    } else {
+    if (!templateElement) {
       console.error("Template element not found.");
+      return;
+    }
+
+    templateElement.style.display = "block";
+    try {
+      const canvas = await html2canvas(templateElement, {
+        useCORS: true,
+        allowTaint: true,
+        scale: 2, // sharper image
+      });
+
+      const blob = await new Promise((resolve) =>
+        canvas.toBlob(resolve, "image/png")
+      );
+
+      if (!blob) {
+        console.error("Failed to convert HTML to image.");
+        return;
+      }
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "yearbook-quote.png";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (error) {
+      console.error("Error converting HTML to image:", error);
+    } finally {
+      templateElement.style.display = "none";
     }
   };
-
-  // // sharing in insta story
 
   React.useEffect(() => {
     if (window.location.href.includes(localStorage.getItem("user"))) {
@@ -105,7 +96,6 @@ export default function Cards(props) {
       </Flex>
 
       {/* template for insta story */}
-      {/* <Box w="0" h="0" overflow={"hidden"}> */}
       {ownProfile && (
         <Template
           caption={props.caption}
@@ -114,36 +104,38 @@ export default function Cards(props) {
           bitsId={props.bitsId}
         />
       )}
-      {/* </Box> */}
       {/* template for insta story */}
 
+      {/* caption */}
       <Flex mt="1rem">
-        <Box w="90%" lineHeight="1.3rem" fontSize="1rem">
+        <Box w="100%" lineHeight="1.3rem" fontSize="1rem">
           {props.caption}
         </Box>
-        {/* insta share Button */}
-        {ownProfile && (
-          <FiInstagram
-            onClick={handleShareInsta}
-            fontSize={"1.5rem"}
-            cursor="pointer"
-            title={isSmallerThan800 ? "share to Instagram" : "download as image"}
-          />
-        )}
-        {/* insta share Button */}
       </Flex>
 
-      {/* likes (left out of the PDF export) */}
-      {props.captionID && (
-        <Flex id="hide-for-pdf" mt="0.9rem" justify="flex-end">
+      {/* bottom row: download icon on the left, like button on the right
+          (left out of the PDF export) */}
+      <Flex id="hide-for-pdf" mt="0.9rem" align="center" justify="space-between">
+        {ownProfile ? (
+          <FiInstagram
+            onClick={handleDownloadImage}
+            fontSize="1.5rem"
+            cursor="pointer"
+            title="download as image"
+          />
+        ) : (
+          <Box />
+        )}
+
+        {props.captionID && (
           <LikeButton
             captionID={props.captionID}
             initialCount={props.likeCount || 0}
             initialLiked={!!props.likedByMe}
             canLike={props.canLike !== false}
           />
-        </Flex>
-      )}
+        )}
+      </Flex>
     </Box>
   );
 }
