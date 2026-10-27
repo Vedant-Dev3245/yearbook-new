@@ -31,6 +31,10 @@ const Interact = forwardRef((props, ref) => {
   const [ownProfile, setOwnProfile] = React.useState();
   // recent activity (new captions on your wall, like milestones on captions you wrote)
   const [notifs, setNotifs] = React.useState({ items: [], unreadCount: 0 });
+  // captions other people wrote for you that are waiting for your approval
+  const [requests, setRequests] = React.useState([]);
+  // number shown on the bell: unread activity + captions waiting for approval
+  const badgeCount = notifs.unreadCount + requests.length;
   const notifActiveRef = React.useRef(false);
   React.useEffect(() => {
     notifActiveRef.current = notifActive;
@@ -45,6 +49,13 @@ const Interact = forwardRef((props, ref) => {
     }).catch(() => {});
     setNotifs((n) => ({ ...n, unreadCount: 0 }));
   }
+
+  // Called by a request card after approve / decline.
+  const handleRequestHandled = (captionID, kind) => {
+    setRequests((r) => r.filter((x) => x.captionID !== captionID));
+    // an approved caption must show up on the wall right away
+    if (kind === "nominate" && props.onRefresh) props.onRefresh();
+  };
   
   const barItems = document.querySelectorAll(".barItems");
   
@@ -85,6 +96,24 @@ const Interact = forwardRef((props, ref) => {
             // the tab is already open (opened before this arrived): it counts as seen
             if (notifActiveRef.current && unread > 0) markNotifsRead();
           }
+        })
+        .catch(() => {});
+      return () => {
+        cancelled = true;
+      };
+    }, [ownProfile, props.id]);
+
+    // captions waiting for approval
+    React.useEffect(() => {
+      if (!ownProfile) return;
+      let cancelled = false;
+      axios({
+        method: "GET",
+        headers: { Authorization: `Bearer ${localStorage.token}` },
+        url: `${process.env.REACT_APP_BACKEND_URL}/nominations/requests`,
+      })
+        .then((response) => {
+          if (!cancelled) setRequests(response.data.requests || []);
         })
         .catch(() => {});
       return () => {
@@ -204,7 +233,7 @@ const Interact = forwardRef((props, ref) => {
               <Text ml="1rem" fontWeight="600" fontSize="1.1rem">
                 notifications
               </Text>
-              {notifs.unreadCount > 0 && (
+              {badgeCount > 0 && (
                 <Flex
                   ml="0.6rem"
                   minW="1.3rem"
@@ -218,7 +247,7 @@ const Interact = forwardRef((props, ref) => {
                   alignItems="center"
                   justifyContent="center"
                 >
-                  {notifs.unreadCount > 9 ? "9+" : notifs.unreadCount}
+                  {badgeCount > 9 ? "9+" : badgeCount}
                 </Flex>
               )}
             </Flex>
@@ -251,7 +280,7 @@ const Interact = forwardRef((props, ref) => {
               <Text ml="1rem" fontWeight="600" fontSize="1.1rem">
                 notifications
               </Text>
-              {notifs.unreadCount > 0 && (
+              {badgeCount > 0 && (
                 <Flex
                   ml="0.6rem"
                   minW="1.3rem"
@@ -265,7 +294,7 @@ const Interact = forwardRef((props, ref) => {
                   alignItems="center"
                   justifyContent="center"
                 >
-                  {notifs.unreadCount > 9 ? "9+" : notifs.unreadCount}
+                  {badgeCount > 9 ? "9+" : badgeCount}
                 </Flex>
               )}
             </Flex>
@@ -291,6 +320,8 @@ const Interact = forwardRef((props, ref) => {
           nominatedBy={props.nominatedby}
           senior={props.senior}
           activity={notifs.items}
+          requests={requests}
+          onRequestHandled={handleRequestHandled}
           onOpenWall={makeWallActive}
         />
       </Box>

@@ -24,6 +24,7 @@ import {
   Alert,
   AlertIcon,
   useDisclosure,
+  useToast,
   HStack,
   Hide,
 } from "@chakra-ui/react";
@@ -41,6 +42,7 @@ import Tags from "./Tags"
 export default function ProfileInfo(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isWriteOpen, onOpen: onWriteOpen, onClose: onWriteClose } = useDisclosure();
+  const toast = useToast();
   const [ownProfile, setOwnProfile] = React.useState();
   const [showEdit, setShowEdit] = React.useState();
   const [spin, setSpin] = React.useState(false);
@@ -163,7 +165,10 @@ export default function ProfileInfo(props) {
         }, 3000);
       })
       .catch(function (err) {
-        setMsg("User has already been nominated!");
+        setMsg(
+          (err.response && err.response.data && err.response.data.message) ||
+            "couldn't nominate, try again"
+        );
         setRes(true)
         console.log(err);
         setSpin(false)
@@ -179,15 +184,32 @@ export default function ProfileInfo(props) {
     setCaptionData(value);
   }
 
-  const [captionData, setCaptionData] = React.useState();
+  const [captionData, setCaptionData] = React.useState("");
 
   function sendRequest() {
+    if (!captionData || !captionData.trim()) {
+      toast({
+        description: "write something first",
+        status: "warning",
+        position: "top",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    // if this person already nominated you, your caption goes straight to their wall;
+    // otherwise it goes to them as a request for approval.
+    const direct = (localStorage.getItem("nominatedBy") || "").includes(props.userid);
+
     axios({
       method: "POST",
       headers: {
         Authorization: `Bearer ${localStorage.token}`,
       },
-      url: localStorage.getItem("nominatedBy").search(props.userid) !== -1 ? `${process.env.REACT_APP_BACKEND_URL}/profiles/${props.userid}/caption` : `${process.env.REACT_APP_BACKEND_URL}/nominations/requests`,
+      url: direct
+        ? `${process.env.REACT_APP_BACKEND_URL}/profiles/${props.userid}/caption`
+        : `${process.env.REACT_APP_BACKEND_URL}/nominations/requests`,
       data: {
         caption: captionData,
         targetId: props.userid,
@@ -195,16 +217,35 @@ export default function ProfileInfo(props) {
     })
       .then(function (res) {
         console.log(res);
-        if (res.data.success) {
-          window.location.reload();
+        writeModalClose();
+        setCaptionData("");
+        toast({
+          title: direct ? "posted on their wall ✓" : "sent for approval ✓",
+          description: direct
+            ? undefined
+            : "they'll see it in their notifications and can approve it",
+          status: "success",
+          position: "top",
+          duration: 4000,
+          isClosable: true,
+        });
+        if (direct) {
+          if (props.onRefresh) props.onRefresh();
+          else window.location.reload();
         }
-        onWriteClose();
       })
       .catch(function (err) {
         console.log(err);
-        // alert(err)
-        setSpin(false);
-        onWriteClose();
+        const d = err.response && err.response.data;
+        toast({
+          description:
+            (d && (d.message || d.error || d.msg)) ||
+            "couldn't send, try again",
+          status: "error",
+          position: "top",
+          duration: 4000,
+          isClosable: true,
+        });
       });
   }
 

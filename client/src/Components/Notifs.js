@@ -2,7 +2,6 @@ import { Box, Text, Flex, useMediaQuery } from "@chakra-ui/react";
 import React from "react";
 import NominateCard from "./NominateCard";
 import ReqCard from "./ReqCard";
-import axios from "axios";
 import { FaHeart } from "react-icons/fa";
 import { FiFeather } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -78,59 +77,62 @@ function ActivityCard({ item, onClick }) {
 }
 
 export default function Nominate(props) {
-  const nominateArray = props.nominatedBy;
+  const nominateArray = props.nominatedBy || [];
+  const requests = props.requests || [];
+  const activity = props.activity || [];
   const [isSmallerThan800] = useMediaQuery("(max-width:800px)");
   const navigate = useNavigate();
-  const activity = props.activity || [];
   const showNominations = props.senior !== false; // juniors only get the activity list
+  const nothingAtAll =
+    nominateArray.length === 0 && requests.length === 0 && activity.length === 0;
 
-  const cardsNom = Array.from(nominateArray).map((person) => {
-    return (
-      <NominateCard
-        name={person.nominator.name.toLowerCase()}
-        key={person.nominator.userID}
-        id={person.nominator.userID}
-      />
-    );
-  });
-
-  const [reqestsUser, setRequestsUser] = React.useState([]);
-
-  React.useEffect(() => {
-    axios({
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.token}`,
-      },
-      url: `${process.env.REACT_APP_BACKEND_URL}/nominations/requests`,
-    })
-      .then(function (response) {
-        setRequestsUser(response.data.requests);
-        // console.log(response.data.requests);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }, []);
-
-  const cardsReq = reqestsUser.map((person) => {
-    return (
-      <ReqCard
-        name={person.writer.name.toLowerCase()}
-        key={person.writer}
-        id={person.writerID}
-        caption={person.caption}
-      />
-    );
-  });
+  const headingStyle = {
+    fontSize: isSmallerThan800 ? "1.5rem" : "3rem",
+    fontWeight: "800",
+  };
+  const rowStyle = {
+    width: isSmallerThan800 ? "100%" : "95%",
+    mt: "2rem",
+    pb: "4rem",
+    flexFlow: "wrap",
+    justifyContent: "left",
+  };
 
   return (
     <Box width="90%" marginInline="auto">
+      {/* 1. captions waiting for your approval */}
+      {showNominations && requests.length > 0 && (
+        <>
+          <Box {...headingStyle}>
+            {requests.length === 1
+              ? "a friend wrote you a "
+              : `${requests.length} friends wrote you `}
+            <Text display="inline" fontFamily="EB Garamond" fontStyle="italic">
+              {requests.length === 1 ? "caption" : "captions"}
+            </Text>{" "}
+            to approve
+          </Box>
+          <Flex {...rowStyle}>
+            {requests.map((person) => (
+              <ReqCard
+                key={person.captionID}
+                captionID={person.captionID}
+                name={person.writer.name.toLowerCase()}
+                id={person.writerID}
+                caption={person.caption}
+                onDone={props.onRequestHandled}
+              />
+            ))}
+          </Flex>
+        </>
+      )}
+
+      {/* 2. recent activity (new captions, like milestones) */}
       {activity.length > 0 && (
         <Box pb="4rem">
-          <Box fontSize={isSmallerThan800 ? "1.5rem" : "3rem"} fontWeight="800">
+          <Box {...headingStyle}>
             recent{" "}
-            <Text display={"inline"} fontFamily="EB Garamond" fontStyle="italic">
+            <Text display="inline" fontFamily="EB Garamond" fontStyle="italic">
               activity
             </Text>
           </Box>
@@ -154,52 +156,45 @@ export default function Nominate(props) {
           </Flex>
         </Box>
       )}
-      {!showNominations && activity.length === 0 && (
-        <Text color="#B3B3B3" fontSize="1.2rem" fontWeight="600">
-          nothing here yet. when friends like the captions you write, you'll see it here.
-        </Text>
+
+      {/* 3. friends who nominated you to write a caption for them */}
+      {showNominations && nominateArray.length > 0 && (
+        <>
+          <Box {...headingStyle}>
+            {nominateArray.length === 1
+              ? "a friend wants you to write them a "
+              : `${nominateArray.length} friends want you to write `}
+            <Text display="inline" fontFamily="EB Garamond" fontStyle="italic">
+              {nominateArray.length === 1 ? "caption" : "captions"}
+            </Text>
+          </Box>
+          <Flex {...rowStyle} mt="4rem">
+            {nominateArray.map((person) => (
+              <NominateCard
+                name={person.nominator.name.toLowerCase()}
+                key={person.nominator.userID}
+                id={person.nominator.userID}
+              />
+            ))}
+          </Flex>
+        </>
       )}
-      {showNominations && (<>
-      <Box fontSize={isSmallerThan800 ? "1.5rem" : "3rem"} fontWeight="800">
-        {nominateArray.length === 0
-          ? "do you want to write some"
-          : nominateArray.length === 1
-            ? `a friend wants you to write them a `
-            : `damnn... ${nominateArray.length - 1}+ `}{" "}
-        <Text display={"inline"} fontFamily="EB Garamond" fontStyle="italic">
-           nomination{nominateArray.length === 1 ? "" : "s"}
-        </Text>
-      </Box>
-      {/* <Text color="#B3B3B3" fontSize="1.2rem" w={isSmallerThan800 ? "100%" : "50%"} mt="0.5rem">the credit score checker allows you to calculate your credit score report and cibil score. it is a three-digit numeric expression that represents your creditworthiness.</Text> */}
-      <Flex
-        width={isSmallerThan800 ? "100%" : "95%"}
-        mt="4rem"
-        pb="4rem"
-        flexFlow={"wrap"}
-        justifyContent="left"
-      >
-        {cardsNom}
-      </Flex>
-      <Box fontSize={isSmallerThan800 ? "1.5rem" : "3rem"} fontWeight="800">
-        {reqestsUser.length === 0
-          ? ""
-          : reqestsUser.length === 1
-            ? `here's a friend with a  `
-            : `you're famous, ${reqestsUser.length - 1}+ new`}{" "}
-        <Text display={"inline"} fontFamily="EB Garamond" fontStyle="italic">
-          {reqestsUser.length > 0 ? reqestsUser.length === 1 ? "caption" : "captions" : ""}
-        </Text>
-      </Box>
-      <Flex
-        width={isSmallerThan800 ? "100%" : "95%"}
-        mt="2rem"
-        pb="4rem"
-        flexFlow={"wrap"}
-        justifyContent="left"
-      >
-        {cardsReq}
-      </Flex>
-      </>)}
+
+      {/* only when there is genuinely nothing to show */}
+      {nothingAtAll &&
+        (showNominations ? (
+          <Box {...headingStyle}>
+            do you want to write some{" "}
+            <Text display="inline" fontFamily="EB Garamond" fontStyle="italic">
+              captions
+            </Text>
+            ?
+          </Box>
+        ) : (
+          <Text color="#B3B3B3" fontSize="1.2rem" fontWeight="600">
+            nothing here yet. when friends like the captions you write, you'll see it here.
+          </Text>
+        ))}
     </Box>
   );
 }

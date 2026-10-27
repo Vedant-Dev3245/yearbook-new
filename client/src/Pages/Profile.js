@@ -1,5 +1,5 @@
 import { Box, Flex } from "@chakra-ui/react";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import ProfileInfo from "../Components/ProfileInfo";
 import ProfileNav from "../Components/ProfileNav";
 import Interact from "../Components/Interact";
@@ -42,30 +42,41 @@ export default function Profile(props) {
     }
   }, [navigate]);
 
-  useEffect(() => {
-    setLoading(true);
-    axios({
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      url: `${process.env.REACT_APP_BACKEND_URL}/profiles/${params.id}`,
-    })
-      .then(function (response) {
-        setUser(response.data);
-        setLoading(false);
-        if (params.id === window.localStorage.getItem("user")) {
-          window.localStorage.setItem("userName", response.data.name);
-          window.localStorage.setItem(
-            "nominatedBy",
-            JSON.stringify(response.data.nominatedby)
-          );
-        }
+  // Loads the profile. "silent" = no full-screen spinner (used to refresh the wall
+  // after approving a caption or posting one).
+  const loadProfile = useCallback(
+    (silent) => {
+      if (!silent) setLoading(true);
+      return axios({
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        url: `${process.env.REACT_APP_BACKEND_URL}/profiles/${params.id}`,
       })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }, [params.id]);
+        .then(function (response) {
+          setUser(response.data);
+          if (params.id === window.localStorage.getItem("user")) {
+            window.localStorage.setItem("userName", response.data.name);
+            window.localStorage.setItem(
+              "nominatedBy",
+              JSON.stringify(response.data.nominatedby)
+            );
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+        .finally(function () {
+          setLoading(false);
+        });
+    },
+    [params.id]
+  );
+
+  useEffect(() => {
+    loadProfile(false);
+  }, [loadProfile]);
 
   useEffect(() => {
     if (localStorage.getItem("user") === null) {
@@ -117,6 +128,7 @@ export default function Profile(props) {
           commitments={user.commitments}
           senior={user.senior}
           setPdf={setPdf}
+          onRefresh={() => loadProfile(true)}
         />
 
         <Interact
@@ -128,6 +140,7 @@ export default function Profile(props) {
           id={params.id}
           commitments={user.commitments}
           senior={user.senior}
+          onRefresh={() => loadProfile(true)}
         />
 
         {pdf && (

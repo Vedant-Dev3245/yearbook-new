@@ -1,287 +1,297 @@
 import React, { useEffect, useState } from "react";
-  import { useNavigate, useLocation } from "react-router-dom";
-  import axios from "axios";
-  import {
-    Box,
-    Input,
-    Flex,
-    Heading,
-    Text,
-    FormLabel,
-    FormControl,
-    FormHelperText,
-    Button,
-    Textarea,
-    SimpleGrid,
-    GridItem,
-    Image,
-    useMediaQuery,
-    Alert,
-    AlertIcon,
-    Link,
-    useDisclosure,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    InputGroup,
-    InputLeftElement,
-    Checkbox,
-    CheckboxGroup,
-    VStack,
-    HStack,
-    IconButton,
-  } from "@chakra-ui/react";
-  import { ChevronDownIcon, CloseIcon, SearchIcon } from '@chakra-ui/icons';
-  import { uploadToCloudinary } from "../cloudinary";
-  import jwtDecode from "jwt-decode";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
+import {
+  Box,
+  Input,
+  Flex,
+  Heading,
+  Text,
+  FormLabel,
+  FormControl,
+  FormHelperText,
+  Button,
+  Textarea,
+  SimpleGrid,
+  GridItem,
+  Image,
+  useMediaQuery,
+  useToast,
+  Link,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  InputGroup,
+  InputLeftElement,
+  Checkbox,
+  CheckboxGroup,
+  VStack,
+  HStack,
+  IconButton,
+} from "@chakra-ui/react";
+import { ChevronDownIcon, CloseIcon, SearchIcon } from '@chakra-ui/icons';
+import { uploadToCloudinary } from "../cloudinary";
+import jwtDecode from "jwt-decode";
 
-  export default function Form() {
-    // const validID = new RegExp(
-    //   "[202][0-4][ABD][1-9AB]([AB][1-9AB]|PS|TS)[0-2][0-9][0-9][0-9]P|2023H1[0-9][0-9][0-2][0-9][0-9][0-9]P|2021D2PS[0-2][0-9][0-9][0-9]P"
-    // );
-    const validID = new RegExp(
-      "[202][0-5][ABD][1-9AB]([AB][1-9AB]|PS|TS)[0-2][0-9][0-9][0-9]P|202[0-5]H[0-9]{7}P"
+export default function Form() {
+  // const validID = new RegExp(
+  //   "[202][0-4][ABD][1-9AB]([AB][1-9AB]|PS|TS)[0-2][0-9][0-9][0-9]P|2023H1[0-9][0-9][0-2][0-9][0-9][0-9]P|2021D2PS[0-2][0-9][0-9][0-9]P"
+  // );
+  const validID = new RegExp(
+    "[202][0-5][ABD][1-9AB]([AB][1-9AB]|PS|TS)[0-2][0-9][0-9][0-9]P|202[0-5]H[0-9]{7}P"
+  );
+
+  const toast = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const data = location.state;
+  useEffect(() => {
+    if (data === undefined || data === null) {
+      navigate("/");
+    }
+  }, [data, navigate]);
+  const [clubsData, setClubsData] = useState([]);
+  const [formInfo, setFormInfo] = React.useState({
+    // firstName: 'shwetabh',
+    firstName: data.given_name ? data.given_name : "",
+    // lastName: 'niket',
+    lastName: data.family_name ? data.family_name : "",
+    quote: "",
+    id: "",
+    email: data ? data.email : "",
+    // email: 'f20210923@pilani.bits-pilani.ac.in',
+    pEmail: "",
+    imgUrl: "",
+    phone: "",
+    commitments: [],
+  });
+  const [img, setImg] = React.useState();
+  const [isDisabled, setIsDisabled] = React.useState(false);
+  const [imgExist, setImgExist] = React.useState(false);
+  const [valid, setValid] = React.useState(false);
+  const [isSmallerThan900] = useMediaQuery("(max-width: 900px)");
+  const [isSmallerThan1100] = useMediaQuery("(max-width: 1100px)");
+  const [isSmallerThan500] = useMediaQuery("(max-width: 500px)");
+
+  const testSeniors = [
+    "kumarh664@gmail.com",
+    "devsatish08@gmail.com",
+    "devtempacc08@gmail.com",
+    "prithvi05prism@gmail.com",
+    "alumnicell@pilani.bits-pilani.ac.in",
+    "vedantjain250@gmail.com",
+  ];
+  function isSeniorEmail() {
+    return (
+      data.email.substring(0, 5) === "f2022" ||
+      data.email.substring(0, 5) === "f2023" ||
+      data.email.substring(0, 5) === "h2025" ||
+      testSeniors.includes(data.email)
     );
-    
+  }
 
-    const navigate = useNavigate();
-    const location = useLocation();
-    const data = location.state;
-    useEffect(() => {
-      if (data === undefined || data === null) {
-        navigate("/");
-      }
-    }, [data, navigate]);
-    const [clubsData, setClubsData] = useState([]);
-    const [formInfo, setFormInfo] = React.useState({
-      // firstName: 'shwetabh',
-      firstName: data.given_name ? data.given_name : "",
-      // lastName: 'niket',
-      lastName: data.family_name ? data.family_name : "",
-      quote: "",
-      id: "",
-      email: data ? data.email : "",
-      // email: 'f20210923@pilani.bits-pilani.ac.in',
-      pEmail: "",
-      imgUrl: "",
-      phone: "",
-      commitments: [],
+  // Errors are shown as toasts (fixed to the screen) so you never have to scroll to see them.
+  function showError(title, description) {
+    toast({
+      title,
+      description,
+      status: "error",
+      position: "top",
+      duration: 3500,
+      isClosable: true,
     });
-    const [img, setImg] = React.useState();
-    const [isDisabled, setIsDisabled] = React.useState(false);
-    const [imgExist, setImgExist] = React.useState(false);
-    const [error, setError] = React.useState(false);
-    const [valid, setValid] = React.useState(false);
-    const [isSmallerThan900] = useMediaQuery("(max-width: 900px)");
-    const [isSmallerThan1100] = useMediaQuery("(max-width: 1100px)");
-    const [isSmallerThan500] = useMediaQuery("(max-width: 500px)");
+  }
 
-    const testSeniors = [
-      "kumarh664@gmail.com",
-      "devsatish08@gmail.com",
-      "devtempacc08@gmail.com",
-      "prithvi05prism@gmail.com",
-      "alumnicell@pilani.bits-pilani.ac.in",
-      "vedantjain250@gmail.com",
-    ];
-    function isSeniorEmail() {
-      return (
-        data.email.substring(0, 5) === "f2022" ||
-        data.email.substring(0, 5) === "f2023" ||
-        data.email.substring(0, 5) === "h2025" ||
-        testSeniors.includes(data.email)
-      );
-    }
+  function validate(e) {
+    const btn = e.target;
+    if (validID.test(formInfo.id)) {
+      setValid(true);
 
-    function validate(e) {
-      if (validID.test(formInfo.id)) {
-        setValid(true);
-        if (
-          (isSeniorEmail())
-            ? formInfo.id !== "" &&
-            formInfo.quote !== "" &&
-            formInfo.phone !== "" &&
-            formInfo.pEmail !== "" &&
-            formInfo.imgUrl !== "" &&
-            imgExist
-            : formInfo.id !== "" &&
-            formInfo.phone !== "" &&
-            formInfo.email !== "" &&
-            formInfo.imgUrl !== "" &&
-            imgExist
-        ) {
-          // ) {
-          e.target.disabled = true;
-          axios({
-            method: "POST",
-            // url: 'some/api',
-            url: `${process.env.REACT_APP_BACKEND_URL}/auth/add`,
-            data: { ...formInfo, token: localStorage.token },
+      const senior = isSeniorEmail();
+      const missing = [];
+      if (!formInfo.id) missing.push("bits id");
+      if (!formInfo.phone) missing.push("phone");
+      if (!formInfo.imgUrl || !imgExist) missing.push("photo");
+      if (senior && !formInfo.quote) missing.push("yearbook quote");
+      if (senior && !formInfo.pEmail) missing.push("personal email");
+      if (!senior && !formInfo.email) missing.push("email");
+
+      if (missing.length === 0) {
+        btn.disabled = true;
+        axios({
+          method: "POST",
+          // url: 'some/api',
+          url: `${process.env.REACT_APP_BACKEND_URL}/auth/add`,
+          data: { ...formInfo, token: localStorage.token },
+        })
+          .then(function (response) {
+            if (response.status === 200) {
+              const decodedToken = jwtDecode(response.data.token);
+              // localStorage.setItem("user", response.data.id);
+              // console.log("This is the UUID of the created user: ", decodedToken.id);
+              localStorage.setItem("user", decodedToken.id);
+              localStorage.setItem("token", response.data.token);
+              // navigate(`/profile/${response.data.id}`);
+              navigate(`/profile/${decodedToken.id}`);
+            }
+            // console.log(response);
           })
-            .then(function (response) {
-              if (response.status === 200) {
-                const decodedToken = jwtDecode(response.data.token);
-                // localStorage.setItem("user", response.data.id);
-                // console.log("This is the UUID of the created user: ", decodedToken.id);
-                localStorage.setItem("user", decodedToken.id);
-                localStorage.setItem("token", response.data.token);
-                // navigate(`/profile/${response.data.id}`);
-                navigate(`/profile/${decodedToken.id}`);
-              }
-              // console.log(response);
-            })
-            .catch(function (error) {
-              // console.log(error);
-            });
-        } else {
-          setError(true);
-          setTimeout(() => {
-            setError(false);
-          }, 2000);
-        }
+          .catch(function (error) {
+            // the button used to stay disabled forever after a failure
+            btn.disabled = false;
+            const d = error.response && error.response.data;
+            showError(
+              "couldn't create your profile",
+              (d && (d.message || d.msg)) || "please try again"
+            );
+          });
       } else {
-        setValid(false);
-        alert("Please enter a valid BITS ID (eg. 2020A7PS0923P");
+        showError("please fill all the fields", `missing: ${missing.join(", ")}`);
       }
+    } else {
+      setValid(false);
+      showError("invalid bits id", "Please enter a valid BITS ID (eg. 2020A7PS0923P)");
     }
+  }
 
-    function handleChange(event) {
-      const { name, value } = event.target;
-      setFormInfo((prevFormInfo) => {
-        if (name === "id") {
-          return {
-            ...prevFormInfo,
-            [name]: value.toUpperCase(),
-          };
-        } else {
-          return {
-            ...prevFormInfo,
-            [name]: value,
-          };
-        }
-      });
-    }
-    function onImageChange(e) {
-      const imageFile = e.target.files[0];
-      if (!imageFile) return;
-      setImg(URL.createObjectURL(imageFile));
-      setImgExist(true);
-      setIsDisabled(true);
-      uploadToCloudinary(imageFile)
-        .then((url) => {
-          setFormInfo((prevFormInfo) => ({ ...prevFormInfo, imgUrl: url }));
-        })
-        .catch((err) => {
-          setImgExist(false);
-          alert(err.message || "Photo upload failed. Please try again.");
-        })
-        .finally(() => setIsDisabled(false));
-    }
-    function handleSubmit(e) {
-      e.preventDefault();
-      if (!correctId(formInfo)) {
-        alert("BITS ID and email do not match!");
-        return;
+  function handleChange(event) {
+    const { name, value } = event.target;
+    setFormInfo((prevFormInfo) => {
+      if (name === "id") {
+        return {
+          ...prevFormInfo,
+          [name]: value.toUpperCase(),
+        };
+      } else {
+        return {
+          ...prevFormInfo,
+          [name]: value,
+        };
       }
-      validate(e);
-    }
-
-    const [selectedOptions, setSelectedOptions] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const { isOpen, onOpen, onClose } = useDisclosure();
-
-    React.useEffect(() => {
-      axios({
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${localStorage.token}`,
-        },
-        url: `${process.env.REACT_APP_BACKEND_URL}/commitments`,
+    });
+  }
+  function onImageChange(e) {
+    const imageFile = e.target.files[0];
+    if (!imageFile) return;
+    setImg(URL.createObjectURL(imageFile));
+    setImgExist(true);
+    setIsDisabled(true);
+    uploadToCloudinary(imageFile)
+      .then((url) => {
+        setFormInfo((prevFormInfo) => ({ ...prevFormInfo, imgUrl: url }));
       })
-        .then(function (response) {
-          // console.log(response.data)
-          const commitmentNames = response.data.map(item => item.commitment_name);
-          setClubsData(commitmentNames);
-        })
-        .catch(function (error) {
-          // console.log(error);
-        });
-    }, []);
+      .catch((err) => {
+        setImgExist(false);
+        showError("photo upload failed", err.message || "Please try again.");
+      })
+      .finally(() => setIsDisabled(false));
+  }
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (!correctId(formInfo)) {
+      showError("BITS ID and email do not match!");
+      return;
+    }
+    validate(e);
+  }
 
-    const handleSelect = (values) => {
-      setSelectedOptions(values);
-      setFormInfo((prevFormInfo) => ({
-        ...prevFormInfo,
-        commitments: values,
-      }));
-    };
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-    const CustomCheckbox = ({ option, isChecked, onToggle }) => {
-      return (
-        <Box
-          display="flex"
-          alignItems="center"
-          cursor="pointer"
-          onClick={() => onToggle(option)}
-          border="2px solid"
-          borderColor="white"
-          width= {isSmallerThan900 ? "16px" : "20px"}
-          height={isSmallerThan900 ? "16px" : "20px"}
-          borderRadius="0.4rem"
-          justifyContent="center"
-          bg={isChecked ? "transparent" : "transparent"} 
-          flexShrink={0}
-        >
-          {isChecked && (
-            <Text fontSize="12px" color="white" lineHeight="20px">
-              ✓
-            </Text>
-          )}
-        </Box>
-      );
-    };
+  React.useEffect(() => {
+    axios({
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.token}`,
+      },
+      url: `${process.env.REACT_APP_BACKEND_URL}/commitments`,
+    })
+      .then(function (response) {
+        // console.log(response.data)
+        const commitmentNames = response.data.map(item => item.commitment_name);
+        setClubsData(commitmentNames);
+      })
+      .catch(function (error) {
+        // console.log(error);
+      });
+  }, []);
 
-    const handleToggle = (option) => {
-      let updatedValues;
-      if (selectedOptions.includes(option)) {
-        updatedValues = selectedOptions.filter((item) => item !== option);
-      } else {
-        updatedValues = [...selectedOptions, option];
-      }
-      handleSelect(updatedValues);
-    };
+  const handleSelect = (values) => {
+    setSelectedOptions(values);
+    setFormInfo((prevFormInfo) => ({
+      ...prevFormInfo,
+      commitments: values,
+    }));
+  };
 
-    const handleSearch = (event) => {
-      setSearchTerm(event.target.value.toLowerCase());
-    };
-
-    const filteredClubs = clubsData.filter((club) =>
-      club.toLowerCase().includes(searchTerm)
+  const CustomCheckbox = ({ option, isChecked, onToggle }) => {
+    return (
+      <Box
+        display="flex"
+        alignItems="center"
+        cursor="pointer"
+        onClick={() => onToggle(option)}
+        border="2px solid"
+        borderColor="white"
+        width= {isSmallerThan900 ? "16px" : "20px"}
+        height={isSmallerThan900 ? "16px" : "20px"}
+        borderRadius="0.4rem"
+        justifyContent="center"
+        bg={isChecked ? "transparent" : "transparent"} 
+        flexShrink={0}
+      >
+        {isChecked && (
+          <Text fontSize="12px" color="white" lineHeight="20px">
+            ✓
+          </Text>
+        )}
+      </Box>
     );
+  };
 
-    const handleDeselect = (option) => {
-      setSelectedOptions((prevSelectedOptions) =>
-        prevSelectedOptions.filter((item) => item !== option)
-      );
-    };
+  const handleToggle = (option) => {
+    let updatedValues;
+    if (selectedOptions.includes(option)) {
+      updatedValues = selectedOptions.filter((item) => item !== option);
+    } else {
+      updatedValues = [...selectedOptions, option];
+    }
+    handleSelect(updatedValues);
+  };
 
-    function correctId() {
-      if (formInfo.id && data.email) {
-        const yearId = formInfo.id.slice(0, 4);
-        const digitsId = formInfo.id.slice(8, 12);
-        const yearEmail = data.email.slice(1, 5);
-        const digitsEmail = data.email.slice(5, 9);
-        if (yearId === yearEmail && digitsId === digitsEmail) {
-          return true;
-        }
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value.toLowerCase());
+  };
+
+  const filteredClubs = clubsData.filter((club) =>
+    club.toLowerCase().includes(searchTerm)
+  );
+
+  const handleDeselect = (option) => {
+    setSelectedOptions((prevSelectedOptions) =>
+      prevSelectedOptions.filter((item) => item !== option)
+    );
+  };
+
+  function correctId() {
+    if (formInfo.id && data.email) {
+      const yearId = formInfo.id.slice(0, 4);
+      const digitsId = formInfo.id.slice(8, 12);
+      const yearEmail = data.email.slice(1, 5);
+      const digitsEmail = data.email.slice(5, 9);
+      if (yearId === yearEmail && digitsId === digitsEmail) {
+        return true;
       }
-       if (testSeniors.includes(data.email)) {
+    }
+    if (testSeniors.includes(data.email)) {
       return true;
     }
-    
+
     return false;
   }
 
@@ -682,19 +692,6 @@ import React, { useEffect, useState } from "react";
           </Button>
         </Box>
       </Flex>
-      <Alert
-        bg="#242323"
-        color="white"
-        status="error"
-        display={error ? "block" : "none"}
-        position="absolute"
-        w="40%"
-        bottom="0"
-        right="0"
-      >
-        <AlertIcon />
-        Please enter all the fields.
-      </Alert>
     </Flex>
   );
 }

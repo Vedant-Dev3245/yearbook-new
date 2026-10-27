@@ -168,7 +168,7 @@ const nominateUser = async (req, res) => {
         console.log("Target has already been nominated!!");
         return res.status(403).send({
             status: "failure",
-            message: "User has already been nominated!",
+            message: "You've already nominated this person (approving their caption request does this automatically).",
          });
     }
 

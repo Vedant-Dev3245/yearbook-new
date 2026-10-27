@@ -17,17 +17,26 @@ const port = process.env.PORT || 3001;
 // POSTGRESQL
 // Setting Up Database and Models: 
 
-// Connect + create missing tables once per server instance (retried if it fails).
+// Connect + make sure the tables exist, once per server instance (retried if it fails).
 let dbReady = null;
 function ensureDb() {
-  // Table creation is slow (many round trips), so it only runs when DB_SYNC=true
-  // (set it once when the tables change, then remove it). Normal requests skip it.
-  if (process.env.DB_SYNC !== "true") return Promise.resolve();
   if (!dbReady) {
     dbReady = (async () => {
-      await postgresClient.authenticate();
-      await alterSync(postgresClient);
-      console.log("Models have been synced succesfully");
+      if (process.env.DB_SYNC === "true") {
+        // full sync of every table (only when you explicitly ask for it)
+        await postgresClient.authenticate();
+        await alterSync(postgresClient);
+        console.log("Models have been synced succesfully");
+      } else {
+        // cheap "CREATE TABLE IF NOT EXISTS" for the likes + notifications tables.
+        // Never blocks requests if it fails.
+        try {
+          await require("./models/like").Like.sync();
+          await require("./models/notification").Notification.sync();
+        } catch (e) {
+          console.log("Could not ensure like/notification tables: ", e.message);
+        }
+      }
     })().catch((err) => {
       dbReady = null;
       throw err;

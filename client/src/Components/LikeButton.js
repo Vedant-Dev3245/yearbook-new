@@ -65,11 +65,13 @@ export default function LikeButton({
       wantRef.current = serverRef.current.liked;
       setWant(serverRef.current.liked);
       const status = err.response && err.response.status;
+      const serverMsg =
+        err.response && err.response.data && err.response.data.message;
       toast({
         description:
           status === 401 || status === 403
-            ? "please log in again to like captions"
-            : "couldn't update your like, try again",
+            ? serverMsg || "please log in again to like captions"
+            : serverMsg || "couldn't update your like, try again",
         status: "error",
         duration: 2500,
         position: "bottom",
