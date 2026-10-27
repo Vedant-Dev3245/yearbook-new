@@ -25,12 +25,6 @@ const findLikeableCaption = async (req, res) => {
         return null;
     }
 
-    // you can't like what you wrote yourself
-    if (caption.writerID === req.user.id) {
-        res.status(403).send({ status: "failure", message: "You can't like your own quote" });
-        return null;
-    }
-
     return caption;
 };
 
@@ -50,7 +44,7 @@ const likeCaption = async (req, res) => {
         }
 
         const likeCount = await Like.count({ where: { captionID: caption.captionID } });
-        if (created) await recordLikeMilestone(caption, likeCount);
+        if (created && caption.writerID !== req.user.id) await recordLikeMilestone(caption, likeCount);
 
         return res.status(200).send({ status: "success", liked: true, likeCount });
     } catch (err) {
@@ -119,7 +113,7 @@ const decorateCaptions = async (captions, viewerID) => {
                 ...c,
                 likeCount: s ? s.count : 0,
                 likedByMe: s ? s.mine : false,
-                canLike: c.writerID !== viewerID,
+                canLike: true,
             };
         })
         .sort(

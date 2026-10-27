@@ -33,17 +33,18 @@ export default function Cards(props) {
               try {
                 await navigator.share(shareData);
                 console.log("Shared successfully!");
-                templateElement.style.display = "none";
               } catch (error) {
                 console.error("Error sharing:", error);
-                templateElement.style.display = "none";
               }
             } else {
-              console.log(
-                "Sharing to Instagram is not supported on this device."
-              );
-              templateElement.style.display = "none";
+              // desktop can't open Instagram, so save the image instead
+              const link = document.createElement("a");
+              link.href = URL.createObjectURL(blob);
+              link.download = "yearbook-quote.png";
+              link.click();
+              URL.revokeObjectURL(link.href);
             }
+            templateElement.style.display = "none";
           } else {
             console.log("Failed to convert HTML to image.");
             templateElement.style.display = "none";
@@ -105,7 +106,7 @@ export default function Cards(props) {
 
       {/* template for insta story */}
       {/* <Box w="0" h="0" overflow={"hidden"}> */}
-      {ownProfile && isSmallerThan800 && (
+      {ownProfile && (
         <Template
           caption={props.caption}
           name={props.name}
@@ -121,14 +122,19 @@ export default function Cards(props) {
           {props.caption}
         </Box>
         {/* insta share Button */}
-        {ownProfile && isSmallerThan800 && (
-          <FiInstagram onClick={handleShareInsta} fontSize={"1.5rem"} />
+        {ownProfile && (
+          <FiInstagram
+            onClick={handleShareInsta}
+            fontSize={"1.5rem"}
+            cursor="pointer"
+            title={isSmallerThan800 ? "share to Instagram" : "download as image"}
+          />
         )}
         {/* insta share Button */}
       </Flex>
 
       {/* likes (left out of the PDF export) */}
-      {props.captionID && (props.canLike || props.likeCount > 0) && (
+      {props.captionID && (
         <Flex id="hide-for-pdf" mt="0.9rem" justify="flex-end">
           <LikeButton
             captionID={props.captionID}
