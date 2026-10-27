@@ -1,4 +1,4 @@
-  import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
   import { useNavigate, useLocation } from "react-router-dom";
   import axios from "axios";
   import {
@@ -43,7 +43,7 @@
     //   "[202][0-4][ABD][1-9AB]([AB][1-9AB]|PS|TS)[0-2][0-9][0-9][0-9]P|2023H1[0-9][0-9][0-2][0-9][0-9][0-9]P|2021D2PS[0-2][0-9][0-9][0-9]P"
     // );
     const validID = new RegExp(
-      "[202][0-4][ABD][1-9AB]([AB][1-9AB]|PS|TS)[0-2][0-9][0-9][0-9]P|202[0-4]H[0-9]{7}P"
+      "[202][0-5][ABD][1-9AB]([AB][1-9AB]|PS|TS)[0-2][0-9][0-9][0-9]P|202[0-5]H[0-9]{7}P"
     );
     
 
@@ -90,7 +90,8 @@
     function isSeniorEmail() {
       return (
         data.email.substring(0, 5) === "f2022" ||
-        data.email.substring(0, 5) === "h2024" ||
+        data.email.substring(0, 5) === "f2023" ||
+        data.email.substring(0, 5) === "h2025" ||
         testSeniors.includes(data.email)
       );
     }

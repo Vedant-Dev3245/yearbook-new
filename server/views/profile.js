@@ -38,11 +38,11 @@ const addProfile = async (req, res) => {
 
       let senior = false;
 
-      if(year<=2022){
+      if(year<=2023){
         senior = true;
       }
 
-      if(req.body.email.substring(0,5) == "h2024"){
+      if(req.body.email.substring(0,5) == "h2025"){
         senior = true;
       }
 
