@@ -37,6 +37,16 @@ function ensureDb() {
           console.log("Could not ensure like/notification tables: ", e.message);
         }
       }
+
+      // The nominations table got a new "readAt" column (unread nominations).
+      // sync() never changes an existing table, so add it here. Safe to repeat.
+      try {
+        await postgresClient.query(
+          'ALTER TABLE ynomination ADD COLUMN IF NOT EXISTS "readAt" TIMESTAMP WITH TIME ZONE'
+        );
+      } catch (e) {
+        console.log("Could not ensure ynomination.readAt column: ", e.message);
+      }
     })().catch((err) => {
       dbReady = null;
       throw err;

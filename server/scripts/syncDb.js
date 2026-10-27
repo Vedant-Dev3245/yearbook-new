@@ -15,5 +15,14 @@ require("../models/index"); // registers all models
     "select table_name from information_schema.tables where table_schema='public' order by 1"
   );
   console.log("Tables now in the database:", rows.map((r) => r.table_name).join(", "));
+  const [cols] = await postgresClient.query(
+    "select column_name from information_schema.columns where table_name='ynomination' order by 1"
+  );
+  console.log("ynomination columns:", cols.map((c) => c.column_name).join(", "));
+  console.log(
+    cols.some((c) => c.column_name === "readAt")
+      ? "OK: readAt column exists in this database."
+      : "PROBLEM: readAt column is still missing in this database."
+  );
   await postgresClient.close();
 })().catch((e) => { console.error(e); process.exit(1); });
