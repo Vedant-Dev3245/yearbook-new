@@ -61,8 +61,7 @@ const addProfile = async (req, res) => {
 
       // Quote Filtering:
 
-      var quote = req.body.quote;
-
+      var quote = (req.body.quote || "").toString().trim().slice(0, 140);
       // Creating the user:
 
       const user = await User.create({
@@ -141,7 +140,7 @@ const editProfile = async (req, res) => {
     }
   
     const imgUrl = req.body.imgUrl;
-    var quote = req.body.quote;
+    var quote = (req.body.quote || "").toString().trim().slice(0, 140);
   
     if (imgUrl !== null) {
       user.imageUrl = imgUrl;

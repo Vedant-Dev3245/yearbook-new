@@ -518,13 +518,16 @@ export default function ProfileInfo(props) {
     </Text>
     {props.senior && (
       <>
-        <Box w="80%">
+        <Box w="80%" maxW="100%">
           <Text
             textAlign={isSmallerThan800 ? "center" : "left"}
             mt={isSmallerThan800 ? "0.4rem" : "1rem"}
             color="#DAE6FF"
             fontWeight="700"
             fontSize="1.2rem"
+            whiteSpace="pre-wrap"
+            overflowWrap="anywhere"
+            wordBreak="break-word"
           >
             {props.quote}
           </Text>
