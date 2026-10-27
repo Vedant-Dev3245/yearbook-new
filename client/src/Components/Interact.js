@@ -25,6 +25,7 @@ import Polls from "./Polls";
 // A card gets its dot the first time the notifications tab is open after the card
 // arrived, and the dot is gone as soon as you leave the tab. Cards that already had
 // their dot are remembered in this browser, so a reload does not bring them back.
+// (Quotes waiting for approval are different: they keep their dot until accepted or declined.)
 const seenStorageKey = () => `notifSeen:${localStorage.getItem("user")}`;
 
 function readSeen() {
@@ -76,15 +77,11 @@ const Interact = forwardRef((props, ref) => {
       const key = notifKeys.nom(person);
       if (!person.readAt && !seen.has(key)) fresh.push(key);
     });
-    requests.forEach((req) => {
-      const key = notifKeys.req(req);
-      if (!seen.has(key)) fresh.push(key);
-    });
     if (fresh.length === 0) return;
     fresh.forEach((key) => seen.add(key));
     writeSeen(seen);
     setVisitKeys((prev) => new Set([...prev, ...fresh]));
-  }, [notifActive, ownProfile, notifs.items, requests, props.nominatedby]);
+  }, [notifActive, ownProfile, notifs.items, props.nominatedby]);
 
   // Leaving the notifications tab removes all the dots.
   React.useEffect(() => {

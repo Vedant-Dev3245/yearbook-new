@@ -12,7 +12,6 @@ import NewDot from "./NewDot";
 export const notifKeys = {
   act: (item) => `act:${item.notificationID}:${item.updatedAt}`,
   nom: (person) => `nom:${person.nominator.userID}`,
-  req: (person) => `req:${person.captionID}`,
 };
 
 // "5m ago", "3h ago", "2d ago"
@@ -144,7 +143,7 @@ export default function Nominate(props) {
                 name={person.writer.name.toLowerCase()}
                 id={person.writerID}
                 caption={person.caption}
-                unread={newKeys.has(notifKeys.req(person))}
+                unread // a quote waiting for approval keeps its dot until you accept or decline it
                 onDone={props.onRequestHandled}
               />
             ))}
