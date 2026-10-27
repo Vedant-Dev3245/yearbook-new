@@ -83,37 +83,51 @@ export default function Nominate(props) {
   const [isSmallerThan800] = useMediaQuery("(max-width:800px)");
   const navigate = useNavigate();
   const showNominations = props.senior !== false; // juniors only get the activity list
+  const shownRequests = showNominations ? requests : [];
+  const shownNominations = showNominations ? nominateArray : [];
   const nothingAtAll =
-    nominateArray.length === 0 && requests.length === 0 && activity.length === 0;
+    shownNominations.length === 0 && shownRequests.length === 0 && activity.length === 0;
 
   const headingStyle = {
     fontSize: isSmallerThan800 ? "1.5rem" : "3rem",
     fontWeight: "800",
   };
-  const rowStyle = {
-    width: isSmallerThan800 ? "100%" : "95%",
-    mt: "2rem",
-    pb: "4rem",
-    flexFlow: "wrap",
-    justifyContent: "left",
-  };
 
   return (
-    <Box width="90%" marginInline="auto">
-      {/* 1. captions waiting for your approval */}
-      {showNominations && requests.length > 0 && (
+    <Box width="90%" marginInline="auto" pb="4rem">
+      {nothingAtAll ? (
+        // only when there is genuinely nothing to show
+        showNominations ? (
+          <Box {...headingStyle}>
+            do you want to write some{" "}
+            <Text display="inline" fontFamily="EB Garamond" fontStyle="italic">
+              captions
+            </Text>
+            ?
+          </Box>
+        ) : (
+          <Text color="#B3B3B3" fontSize="1.2rem" fontWeight="600">
+            nothing here yet. when friends like the captions you write, you'll see it here.
+          </Text>
+        )
+      ) : (
         <>
           <Box {...headingStyle}>
-            {requests.length === 1
-              ? "a friend wrote you a "
-              : `${requests.length} friends wrote you `}
+            your{" "}
             <Text display="inline" fontFamily="EB Garamond" fontStyle="italic">
-              {requests.length === 1 ? "caption" : "captions"}
-            </Text>{" "}
-            to approve
+              notifications
+            </Text>
           </Box>
-          <Flex {...rowStyle}>
-            {requests.map((person) => (
+
+          {/* one list: the cards that need you come first, then activity */}
+          <Flex
+            direction="column"
+            gap="1rem"
+            mt="2rem"
+            w={isSmallerThan800 ? "100%" : "70%"}
+          >
+            {/* captions waiting for your approval */}
+            {shownRequests.map((person) => (
               <ReqCard
                 key={person.captionID}
                 captionID={person.captionID}
@@ -123,25 +137,17 @@ export default function Nominate(props) {
                 onDone={props.onRequestHandled}
               />
             ))}
-          </Flex>
-        </>
-      )}
 
-      {/* 2. recent activity (new captions, like milestones) */}
-      {activity.length > 0 && (
-        <Box pb="4rem">
-          <Box {...headingStyle}>
-            recent{" "}
-            <Text display="inline" fontFamily="EB Garamond" fontStyle="italic">
-              activity
-            </Text>
-          </Box>
-          <Flex
-            direction="column"
-            gap="1rem"
-            mt="2rem"
-            w={isSmallerThan800 ? "100%" : "60%"}
-          >
+            {/* friends who nominated you to write a caption for them */}
+            {shownNominations.map((person) => (
+              <NominateCard
+                name={person.nominator.name.toLowerCase()}
+                key={person.nominator.userID}
+                id={person.nominator.userID}
+              />
+            ))}
+
+            {/* new captions and like milestones */}
             {activity.map((item) => (
               <ActivityCard
                 key={item.notificationID}
@@ -154,47 +160,8 @@ export default function Nominate(props) {
               />
             ))}
           </Flex>
-        </Box>
-      )}
-
-      {/* 3. friends who nominated you to write a caption for them */}
-      {showNominations && nominateArray.length > 0 && (
-        <>
-          <Box {...headingStyle}>
-            {nominateArray.length === 1
-              ? "a friend wants you to write them a "
-              : `${nominateArray.length} friends want you to write `}
-            <Text display="inline" fontFamily="EB Garamond" fontStyle="italic">
-              {nominateArray.length === 1 ? "caption" : "captions"}
-            </Text>
-          </Box>
-          <Flex {...rowStyle} mt="4rem">
-            {nominateArray.map((person) => (
-              <NominateCard
-                name={person.nominator.name.toLowerCase()}
-                key={person.nominator.userID}
-                id={person.nominator.userID}
-              />
-            ))}
-          </Flex>
         </>
       )}
-
-      {/* only when there is genuinely nothing to show */}
-      {nothingAtAll &&
-        (showNominations ? (
-          <Box {...headingStyle}>
-            do you want to write some{" "}
-            <Text display="inline" fontFamily="EB Garamond" fontStyle="italic">
-              captions
-            </Text>
-            ?
-          </Box>
-        ) : (
-          <Text color="#B3B3B3" fontSize="1.2rem" fontWeight="600">
-            nothing here yet. when friends like the captions you write, you'll see it here.
-          </Text>
-        ))}
     </Box>
   );
 }

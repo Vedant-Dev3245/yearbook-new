@@ -369,13 +369,13 @@ const writeCaption = async (req, res) => {
     var caption = req.body.caption;
     const writerID = req.user.id;
     const targetID = req.params.id;
-    
+
     if (writerID == targetID) {
       return res.status(403).send({
         status: "failure",
         message: "You can't write for yourself",
       });
-    };
+    }
 
     const nomination = await Nomination.findOne({where: {
       [Op.and]: [
@@ -384,101 +384,59 @@ const writeCaption = async (req, res) => {
       ]
     }});
 
-    if (!nomination){
+    if (!nomination) {
       console.log("[writeCaption Route] User not nominated to write for target");
       return res.status(403).send({
         status: "failure",
         message: "You're not nominated to write the caption!"
       });
-    };
+    }
 
-    if (caption === "") {
-      return res.status(500).send({
+    if (caption == null || String(caption).trim() === "") {
+      return res.status(400).send({
+        status: "failure",
+        message: "Please enter a valid caption!",
         error: "Please enter a valid caption!",
       });
-    }else{
-    
-      const receiver = await User.findByPk(targetID);
-
-      if(!receiver){
-        console.log("[writeCaption Route] The target doesn't exist");
-        return res.status(403).send({
-          status: "failure",
-          message: "The target user doesn't exist"
-        })
-      };
-
-      const oldcaption = await Caption.findOne({where: {
-        [Op.and]:[
-          {writerID: writerID},
-          {targetID: targetID}
-        ]
-      }});
-
-      if(oldcaption){
-        // If the words change, the old likes no longer apply to the new text.
-        const textChanged = oldcaption.caption !== caption;
-        oldcaption.caption = caption;
-        await oldcaption.save();
-        if (textChanged) {
-          await Like.destroy({ where: { captionID: oldcaption.captionID } });
-        }
-
-        const newcaption = await Caption.findOne({where: {
-          [Op.and]:[
-            {writerID: writerID},
-            {targetID: targetID}
-          ]
-        }}, 
-        {
-          include: [
-            {
-            Model: User,
-            as: 'writer'
-            },
-            {
-              Model: User,
-              as: 'target'
-            }
-          ]
-        });
-
-        console.log("The caption was updated: ", newcaption);
-
-        return res.status(200).send({
-          status: "success",
-          message: "Caption was updated succesfully",
-          caption: newcaption
-        });
-
-      }else {
-        const newcaption = await Caption.create({
-          writerID: writerID,
-          targetID: targetID,
-          caption: caption,
-          status: 1
-        });
-
-        nomination.status = 1;
-        await nomination.save();
-
-        await recordNewCaption(newcaption);
-
-        console.log("The caption was created: ", newcaption);
-        console.log("The nomination now is: ", nomination);
-
-        return res.status(200).send({
-          status: "success",
-          message: "Caption was created successfully",
-          caption: newcaption
-        })
-      }
     }
+    caption = String(caption).trim().slice(0, 1000);
+
+    const receiver = await User.findByPk(targetID);
+
+    if (!receiver) {
+      console.log("[writeCaption Route] The target doesn't exist");
+      return res.status(403).send({
+        status: "failure",
+        message: "The target user doesn't exist"
+      });
+    }
+
+    // every caption is its own entry now (no more overwriting the earlier one)
+    const newcaption = await Caption.create({
+      writerID: writerID,
+      targetID: targetID,
+      caption: caption,
+      status: 1
+    });
+
+    nomination.status = 1;
+    await nomination.save();
+
+    await recordNewCaption(newcaption);
+
+    console.log("The caption was created: ", newcaption);
+
+    return res.status(200).send({
+      status: "success",
+      approved: true,
+      message: "Caption was created successfully",
+      caption: newcaption
+    });
   } catch (err) {
     console.log("[writeCaption Route] There was an error: ", err);
-    return res.send({
+    return res.status(500).send({
       status: "failure",
-      msg: "There was an error, Please try after some time",
+      message: "There was an error, Please try after some time",
       error: err
     });
   }

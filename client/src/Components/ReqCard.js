@@ -72,10 +72,8 @@ export default function ReqCard(props) {
       p="1.3rem 1rem"
       className="card"
       color="#DCEDFB"
-      marginRight="1rem"
-      marginBottom="1rem"
       opacity="0.8"
-      w={isSmallerThan800 ? "100%" : "max-width"}
+      w="100%"
       alignItems={"center"}
       backdropFilter="blur(40px)"
       borderRadius="20px"
@@ -85,15 +83,28 @@ export default function ReqCard(props) {
       fontWeight="700"
       boxShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
     >
-      <Flex
-        bgColor={"rgba(255, 255, 255, 0.05)"}
-        border="1px solid rgba(255, 255, 255, 0.25)"
-        borderRadius="3rem"
-        w="fit-content"
-        p="0.3rem 0.8rem"
-      >
-        <Text fontWeight={"600"} fontSize="0.9rem">
-          {props.name}
+      <Flex alignItems="center" gap="0.6rem" flexWrap="wrap">
+        <Flex
+          bgColor={"rgba(255, 255, 255, 0.05)"}
+          border="1px solid rgba(255, 255, 255, 0.25)"
+          borderRadius="3rem"
+          w="fit-content"
+          p="0.3rem 0.8rem"
+        >
+          <Text fontWeight={"600"} fontSize="0.9rem">
+            {props.name}
+          </Text>
+        </Flex>
+        <Text
+          fontSize="0.7rem"
+          fontWeight="600"
+          color="#B3B3B3"
+          border="1px solid rgba(255, 255, 255, 0.25)"
+          borderRadius="3rem"
+          p="0.15rem 0.6rem"
+          whiteSpace="nowrap"
+        >
+          needs your approval
         </Text>
       </Flex>
       <Box
@@ -103,6 +114,7 @@ export default function ReqCard(props) {
         fontWeight="400"
         marginBlock={isSmallerThan800 ? "0.6rem" : "0"}
         marginInline={isSmallerThan800 ? "0" : "1rem"}
+        flex={isSmallerThan800 ? "none" : "1"}
       >
         wrote on your wall: {props.caption}
       </Box>
