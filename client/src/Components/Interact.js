@@ -17,9 +17,29 @@ import axios from "axios";
 
 import Wall from "./Wall";
 import Nominate from "./Nominate";
-import Notifs from "./Notifs";
+import Notifs, { notifKeys } from "./Notifs";
 import Stats from "./Stats";
 import Polls from "./Polls";
+
+// ---- "new" dots on the notification cards ----
+// A card gets its dot the first time the notifications tab is open after the card
+// arrived, and the dot is gone as soon as you leave the tab. Cards that already had
+// their dot are remembered in this browser, so a reload does not bring them back.
+const seenStorageKey = () => `notifSeen:${localStorage.getItem("user")}`;
+
+function readSeen() {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(seenStorageKey()) || "[]"));
+  } catch (e) {
+    return new Set();
+  }
+}
+
+function writeSeen(seen) {
+  try {
+    localStorage.setItem(seenStorageKey(), JSON.stringify(Array.from(seen).slice(-300)));
+  } catch (e) {}
+}
 
 const Interact = forwardRef((props, ref) => {
   const [wallActive, setWallActive] = React.useState(true);
@@ -35,9 +55,40 @@ const Interact = forwardRef((props, ref) => {
   const [requests, setRequests] = React.useState([]);
   // number shown on the bell: unread activity + unread nominations + quotes waiting for approval
   const badgeCount = notifs.unreadCount + notifs.nominationUnread + requests.length;
+  // cards that show the "new" dot right now (only while the notifications tab is open)
+  const [visitKeys, setVisitKeys] = React.useState(() => new Set());
   const notifActiveRef = React.useRef(false);
   React.useEffect(() => {
     notifActiveRef.current = notifActive;
+  }, [notifActive]);
+
+  // While the notifications tab is open, give a dot to every card that is new
+  // (also covers cards that arrive after the tab was opened).
+  React.useEffect(() => {
+    if (!notifActive || !ownProfile) return;
+    const seen = readSeen();
+    const fresh = [];
+    notifs.items.forEach((item) => {
+      const key = notifKeys.act(item);
+      if (!item.readAt && !seen.has(key)) fresh.push(key);
+    });
+    (props.nominatedby || []).forEach((person) => {
+      const key = notifKeys.nom(person);
+      if (!person.readAt && !seen.has(key)) fresh.push(key);
+    });
+    requests.forEach((req) => {
+      const key = notifKeys.req(req);
+      if (!seen.has(key)) fresh.push(key);
+    });
+    if (fresh.length === 0) return;
+    fresh.forEach((key) => seen.add(key));
+    writeSeen(seen);
+    setVisitKeys((prev) => new Set([...prev, ...fresh]));
+  }, [notifActive, ownProfile, notifs.items, requests, props.nominatedby]);
+
+  // Leaving the notifications tab removes all the dots.
+  React.useEffect(() => {
+    if (!notifActive) setVisitKeys((prev) => (prev.size ? new Set() : prev));
   }, [notifActive]);
 
   // Tell the server everything has been seen. The dots on the items stay for this visit.
@@ -324,6 +375,7 @@ const Interact = forwardRef((props, ref) => {
           nominatedBy={props.nominatedby}
           senior={props.senior}
           activity={notifs.items}
+          newKeys={visitKeys}
           requests={requests}
           onRequestHandled={handleRequestHandled}
           onOpenWall={makeWallActive}

@@ -5,6 +5,15 @@ import ReqCard from "./ReqCard";
 import { FaHeart } from "react-icons/fa";
 import { FiFeather } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import NewDot from "./NewDot";
+
+// Identifies one notification card. Interact uses these to remember which cards
+// already got their "new" dot, so the dot only shows on the first visit.
+export const notifKeys = {
+  act: (item) => `act:${item.notificationID}:${item.updatedAt}`,
+  nom: (person) => `nom:${person.nominator.userID}`,
+  req: (person) => `req:${person.captionID}`,
+};
 
 // "5m ago", "3h ago", "2d ago"
 function timeAgo(date) {
@@ -18,8 +27,7 @@ function timeAgo(date) {
 }
 
 // One line in the "recent activity" list.
-function ActivityCard({ item, onClick }) {
-  const unread = !item.readAt;
+function ActivityCard({ item, unread, onClick }) {
   const isLike = item.type === "caption_like";
   const target = item.caption && item.caption.target ? item.caption.target.name.toLowerCase() : "a friend";
   const actor = item.actor ? item.actor.name.toLowerCase() : "someone";
@@ -43,6 +51,7 @@ function ActivityCard({ item, onClick }) {
       transition="all 0.2s ease"
       _hover={{ opacity: 1 }}
     >
+      {unread && <NewDot />}
       <Flex
         flexShrink={0}
         h="2.4rem"
@@ -71,7 +80,6 @@ function ActivityCard({ item, onClick }) {
           {timeAgo(item.updatedAt || item.createdAt)}
         </Text>
       </Box>
-      {unread && <Box flexShrink={0} h="0.6rem" w="0.6rem" borderRadius="50%" bg="#FF6187" />}
     </Flex>
   );
 }
@@ -80,6 +88,8 @@ export default function Nominate(props) {
   const nominateArray = props.nominatedBy || [];
   const requests = props.requests || [];
   const activity = props.activity || [];
+  // cards that get the "new" dot during this visit (cleared when you leave the tab)
+  const newKeys = props.newKeys || new Set();
   const [isSmallerThan800] = useMediaQuery("(max-width:800px)");
   const navigate = useNavigate();
   const showNominations = props.senior !== false; // juniors only get the activity list
@@ -134,6 +144,7 @@ export default function Nominate(props) {
                 name={person.writer.name.toLowerCase()}
                 id={person.writerID}
                 caption={person.caption}
+                unread={newKeys.has(notifKeys.req(person))}
                 onDone={props.onRequestHandled}
               />
             ))}
@@ -144,7 +155,7 @@ export default function Nominate(props) {
                 name={person.nominator.name.toLowerCase()}
                 key={person.nominator.userID}
                 id={person.nominator.userID}
-                unread={!person.readAt}
+                unread={newKeys.has(notifKeys.nom(person))}
               />
             ))}
 
@@ -153,6 +164,7 @@ export default function Nominate(props) {
               <ActivityCard
                 key={item.notificationID}
                 item={item}
+                unread={newKeys.has(notifKeys.act(item))}
                 onClick={() =>
                   item.type === "caption_like" && item.caption
                     ? navigate(`/profile/${item.caption.targetID}`)

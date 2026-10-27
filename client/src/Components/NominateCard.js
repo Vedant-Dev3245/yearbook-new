@@ -22,6 +22,7 @@ import { useEffect } from "react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import NewDot from "./NewDot";
 
 export default function NominateCard(props) {
   // useEffect(() => {
@@ -134,9 +135,7 @@ export default function NominateCard(props) {
         {msg}
       </Alert>
       <Flex alignItems="center" gap="0.6rem" flexWrap="wrap">
-        {props.unread && (
-          <Box flexShrink={0} h="0.6rem" w="0.6rem" borderRadius="50%" bg="#FF6187" />
-        )}
+        {props.unread && <NewDot />}
         <Flex
           bgColor={"rgba(255, 255, 255, 0.05)"}
           border="1px solid rgba(255, 255, 255, 0.25)"

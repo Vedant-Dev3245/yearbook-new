@@ -9,6 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import axios from "axios";
+import NewDot from "./NewDot";
 
 export default function ReqCard(props) {
   const [isSmallerThan800] = useMediaQuery("(max-width:800px)");
@@ -84,6 +85,7 @@ export default function ReqCard(props) {
       boxShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
     >
       <Flex alignItems="center" gap="0.6rem" flexWrap="wrap">
+        {props.unread && <NewDot />}
         <Flex
           bgColor={"rgba(255, 255, 255, 0.05)"}
           border="1px solid rgba(255, 255, 255, 0.25)"
