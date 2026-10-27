@@ -56,7 +56,7 @@ export default function Home() {
     if (localStorage.getItem("user") === null) {
       google.accounts.id.initialize({
         client_id:
-          "1050493483344-ardfhdeca71u0v4758micitopt027jnr.apps.googleusercontent.com",
+          "82672622767-auemisd62etgdqec278abeb9gubq6lt2.apps.googleusercontent.com",
         callback: handleCallbackResponse,
       });
 
