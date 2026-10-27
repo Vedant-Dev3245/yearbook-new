@@ -5,7 +5,8 @@
   "engines": { "node": "22.x" },
   "scripts": {
     "start": "node --watch --env-file=server/yearbook.env server/server.js",
-    "seed:clubs": "node --env-file=server/yearbook.env server/scripts/seedClubs.js"
+    "seed:clubs": "node --env-file=server/yearbook.env server/scripts/seedClubs.js",
+    "db:sync": "node --env-file=server/yearbook.env server/scripts/syncDb.js"
   },
   "dependencies": {
     "bad-words": "^3.0.4",

@@ -8,6 +8,9 @@ const {Commitment} = require('../models/commitment');
 const {Nomination} = require('../models/nomination');
 const {Poll} = require('../models/poll');
 const {Vote} = require('../models/vote');
+const { decorateCaptions } = require('./likes');
+const { recordNewCaption } = require('./notifications');
+const { Like } = require('../models/like');
 
 const jwt = require("jsonwebtoken");
 const Filter = require("bad-words");
@@ -182,7 +185,8 @@ const getProfile = async (req, res) => {
         },
         include: [{
           model: User,
-          as: 'writer'
+          as: 'writer',
+          attributes: ['userID', 'name', 'bitsId', 'imageUrl']
         }
         ]},
         {
@@ -223,7 +227,10 @@ const getProfile = async (req, res) => {
       });
     }
 
-    return res.status(200).send(user.toJSON());
+    const profile = user.toJSON();
+    profile.captions = await decorateCaptions(profile.captions, req.user.id);
+
+    return res.status(200).send(profile);
   } catch (err) {
     console.log("There was an error", err);
     return res.send({
@@ -410,8 +417,13 @@ const writeCaption = async (req, res) => {
       }});
 
       if(oldcaption){
+        // If the words change, the old likes no longer apply to the new text.
+        const textChanged = oldcaption.caption !== caption;
         oldcaption.caption = caption;
         await oldcaption.save();
+        if (textChanged) {
+          await Like.destroy({ where: { captionID: oldcaption.captionID } });
+        }
 
         const newcaption = await Caption.findOne({where: {
           [Op.and]:[
@@ -450,6 +462,8 @@ const writeCaption = async (req, res) => {
 
         nomination.status = 1;
         await nomination.save();
+
+        await recordNewCaption(newcaption);
 
         console.log("The caption was created: ", newcaption);
         console.log("The nomination now is: ", nomination);

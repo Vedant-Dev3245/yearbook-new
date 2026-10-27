@@ -13,6 +13,7 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import { FiFeather, FiAnchor, FiBell, FiActivity, FiBarChart2 } from "react-icons/fi";
+import axios from "axios";
 
 import Wall from "./Wall";
 import Nominate from "./Nominate";
@@ -28,6 +29,22 @@ const Interact = forwardRef((props, ref) => {
   const [statsActive, setStatsActive] = React.useState(false);
   const [isSmallerThan800] = useMediaQuery("(max-width:800px)");
   const [ownProfile, setOwnProfile] = React.useState();
+  // recent activity (new captions on your wall, like milestones on captions you wrote)
+  const [notifs, setNotifs] = React.useState({ items: [], unreadCount: 0 });
+  const notifActiveRef = React.useRef(false);
+  React.useEffect(() => {
+    notifActiveRef.current = notifActive;
+  }, [notifActive]);
+
+  // Tell the server everything has been seen. The dots on the items stay for this visit.
+  function markNotifsRead() {
+    axios({
+      method: "POST",
+      headers: { Authorization: `Bearer ${localStorage.token}` },
+      url: `${process.env.REACT_APP_BACKEND_URL}/notifications/read`,
+    }).catch(() => {});
+    setNotifs((n) => ({ ...n, unreadCount: 0 }));
+  }
   
   const barItems = document.querySelectorAll(".barItems");
   
@@ -52,6 +69,28 @@ const Interact = forwardRef((props, ref) => {
     React.useEffect(() => {
       makeWallActive();
     }, [props.id]);
+
+    React.useEffect(() => {
+      if (!ownProfile) return;
+      let cancelled = false;
+      axios({
+        method: "GET",
+        headers: { Authorization: `Bearer ${localStorage.token}` },
+        url: `${process.env.REACT_APP_BACKEND_URL}/notifications`,
+      })
+        .then((response) => {
+          if (!cancelled && response.data && response.data.items) {
+            const unread = response.data.unreadCount || 0;
+            setNotifs({ items: response.data.items, unreadCount: unread });
+            // the tab is already open (opened before this arrived): it counts as seen
+            if (notifActiveRef.current && unread > 0) markNotifsRead();
+          }
+        })
+        .catch(() => {});
+      return () => {
+        cancelled = true;
+      };
+    }, [ownProfile, props.id]);
 
   const makeWallActive = () => {
     setWallActive(true);
@@ -81,6 +120,9 @@ const Interact = forwardRef((props, ref) => {
     setStatsActive(false);
     removeActive();
     document.querySelector(".notif").classList.add("active");
+
+    // opening the tab counts as reading
+    if (notifs.unreadCount > 0) markNotifsRead();
   }
 
   function makePollsActive() {
@@ -162,21 +204,72 @@ const Interact = forwardRef((props, ref) => {
               <Text ml="1rem" fontWeight="600" fontSize="1.1rem">
                 notifications
               </Text>
+              {notifs.unreadCount > 0 && (
+                <Flex
+                  ml="0.6rem"
+                  minW="1.3rem"
+                  h="1.3rem"
+                  px="0.35rem"
+                  borderRadius="full"
+                  bg="#FF6187"
+                  color="white"
+                  fontSize="0.75rem"
+                  fontWeight="700"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  {notifs.unreadCount > 9 ? "9+" : notifs.unreadCount}
+                </Flex>
+              )}
             </Flex>
           </>
         ) : (
-          <Flex
-            onClick={makeWallActive}
-            cursor="pointer"
-            alignItems="center"
-            p="1rem"
-            className="wall active barItems"
-          >
-            <FiFeather filter="drop-shadow(0px 0px 15px #2094FF" fontSize="1.2rem" />
-            <Text ml="1rem" fontWeight="600" fontSize="1.1rem">
-              {ownProfile ? "your wall" : "wall"}
-            </Text>
-          </Flex>
+          <>
+            <Flex
+              onClick={makeWallActive}
+              cursor="pointer"
+              alignItems="center"
+              p="1rem"
+              className="wall active barItems"
+            >
+              <FiFeather filter="drop-shadow(0px 0px 15px #2094FF" fontSize="1.2rem" />
+              <Text ml="1rem" fontWeight="600" fontSize="1.1rem">
+                {ownProfile ? "your wall" : "wall"}
+              </Text>
+            </Flex>
+
+            <Flex
+              display={ownProfile ? "flex" : "none"}
+              onClick={makeNotifActive}
+              cursor="pointer"
+              alignItems="center"
+              p="1rem"
+              className="notif barItems"
+              id="hide-for-pdf"
+            >
+              <FiBell filter="drop-shadow(0px 0px 15px #2094FF" fontSize="1.2rem" />
+              <Text ml="1rem" fontWeight="600" fontSize="1.1rem">
+                notifications
+              </Text>
+              {notifs.unreadCount > 0 && (
+                <Flex
+                  ml="0.6rem"
+                  minW="1.3rem"
+                  h="1.3rem"
+                  px="0.35rem"
+                  borderRadius="full"
+                  bg="#FF6187"
+                  color="white"
+                  fontSize="0.75rem"
+                  fontWeight="700"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  {notifs.unreadCount > 9 ? "9+" : notifs.unreadCount}
+                </Flex>
+              )}
+            </Flex>
+          </>
         )}
       </Flex>
 
@@ -194,7 +287,12 @@ const Interact = forwardRef((props, ref) => {
         <Nominate name={props.name} />
       </Box>
       <Box display={notifActive && ownProfile ? "block" : "none"}>
-        <Notifs nominatedBy={props.nominatedby} />
+        <Notifs
+          nominatedBy={props.nominatedby}
+          senior={props.senior}
+          activity={notifs.items}
+          onOpenWall={makeWallActive}
+        />
       </Box>
       <Box display={pollsActive && ownProfile ? "block" : "none"}>
         <Polls />

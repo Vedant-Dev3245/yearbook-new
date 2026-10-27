@@ -4,6 +4,7 @@ import { thumb } from "../cloudinary";
 import html2canvas from "html2canvas";
 import Template from "./Template";
 import { FiInstagram } from "react-icons/fi";
+import LikeButton from "./LikeButton";
 export default function Cards(props) {
   const [isSmallerThan800] = useMediaQuery("(max-width:800px)");
   const [ownProfile, setOwnProfile] = React.useState("");
@@ -125,6 +126,18 @@ export default function Cards(props) {
         )}
         {/* insta share Button */}
       </Flex>
+
+      {/* likes (left out of the PDF export) */}
+      {props.captionID && (props.canLike || props.likeCount > 0) && (
+        <Flex id="hide-for-pdf" mt="0.9rem" justify="flex-end">
+          <LikeButton
+            captionID={props.captionID}
+            initialCount={props.likeCount || 0}
+            initialLiked={!!props.likedByMe}
+            canLike={props.canLike !== false}
+          />
+        </Flex>
+      )}
     </Box>
   );
 }

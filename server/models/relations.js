@@ -1,4 +1,4 @@
-const associateModels = async (User, Commitment, Poll, Vote, Nomination, Caption) => {
+const associateModels = async (User, Commitment, Poll, Vote, Nomination, Caption, Like, Notification) => {
 
     // Commitments - Users Associations
     // User has MANY commitments and a Commitment have MANY users
@@ -116,7 +116,68 @@ const associateModels = async (User, Commitment, Poll, Vote, Nomination, Caption
         as: 'parentcommitment'
     });
 
-    const associatedModels = {User, Commitment, Poll, Vote, Nomination, Caption};
+    // Likes
+    // A Caption has MANY likes; a User has MANY likes. Deleting either removes the likes.
+
+    Caption.hasMany(Like, {
+        foreignKey: 'captionID',
+        as: 'likes',
+        onDelete: 'CASCADE'
+    });
+
+    Like.belongsTo(Caption, {
+        foreignKey: 'captionID',
+        as: 'caption'
+    });
+
+    User.hasMany(Like, {
+        foreignKey: 'userID',
+        as: 'likesGiven',
+        onDelete: 'CASCADE'
+    });
+
+    Like.belongsTo(User, {
+        foreignKey: 'userID',
+        as: 'liker'
+    });
+
+    // Notifications
+    // A User receives MANY notifications; a notification may point at one Caption and one actor.
+
+    User.hasMany(Notification, {
+        foreignKey: 'userID',
+        as: 'notifications',
+        onDelete: 'CASCADE'
+    });
+
+    Notification.belongsTo(User, {
+        foreignKey: 'userID',
+        as: 'recipient'
+    });
+
+    User.hasMany(Notification, {
+        foreignKey: 'actorID',
+        as: 'notificationsCaused',
+        onDelete: 'CASCADE'
+    });
+
+    Notification.belongsTo(User, {
+        foreignKey: 'actorID',
+        as: 'actor'
+    });
+
+    Caption.hasMany(Notification, {
+        foreignKey: 'captionID',
+        as: 'notifications',
+        onDelete: 'CASCADE'
+    });
+
+    Notification.belongsTo(Caption, {
+        foreignKey: 'captionID',
+        as: 'caption'
+    });
+
+    const associatedModels = {User, Commitment, Poll, Vote, Nomination, Caption, Like, Notification};
 
     return associatedModels;
 };

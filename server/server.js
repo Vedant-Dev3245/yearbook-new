@@ -101,12 +101,14 @@ const nominationRoutes = require("./routes/nominations");
 // const pollRoutes = require("./routes/polls");
 const profileRoutes = require("./routes/profile");
 const commitmentRoutes = require("./routes/commitments")
+const notificationRoutes = require("./routes/notifications");
 const { isAuthenticated } = require("./middleware/auth");
 
 app.use("/auth", authRoutes);
 // app.use("/polls", isAuthenticated, pollRoutes);
 app.use("/nominations", isAuthenticated, nominationRoutes);
 app.use("/profiles", isAuthenticated, profileRoutes);
+app.use("/notifications", isAuthenticated, notificationRoutes);
 app.use("/commitments", commitmentRoutes);
 // Commitments Routes without isAuthenticated middleware because we need to pull allCommitments in the form and updateUserCommitments during account creation.
 

@@ -1,7 +1,7 @@
 import React from "react";
 import Masonry from "react-masonry-css";
 import Cards from "./Cards";
-import { Box, useMediaQuery, Text, SimpleGrid } from "@chakra-ui/react";
+import { Box, Flex, useMediaQuery, Text, SimpleGrid } from "@chakra-ui/react";
 import ClubCards from "./ClubCards";
 
 export default function Wall(props) {
@@ -13,7 +13,17 @@ export default function Wall(props) {
     700: 2,
     500: 1,
   };
-  const cards = Array.from(capt).map((person, index) => {
+  // "top" = most liked first (the order the server sends); "new" = newest first.
+  // Likes tapped during a visit never reshuffle the cards, so nothing jumps under your finger.
+  const [sortMode, setSortMode] = React.useState("top");
+  const ordered = React.useMemo(() => {
+    const list = Array.from(capt);
+    if (sortMode === "new") {
+      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+    return list;
+  }, [capt, sortMode]);
+  const cards = ordered.map((person, index) => {
     return (
       <Cards
         name={person.writer.name}
@@ -21,7 +31,11 @@ export default function Wall(props) {
         caption={person.caption}
         img={person.writer.imageUrl}
         bitsId={person.writer.bitsId}
-        key={person.id}
+        captionID={person.captionID}
+        likeCount={person.likeCount}
+        likedByMe={person.likedByMe}
+        canLike={person.canLike}
+        key={person.captionID}
       />
     );
   });
@@ -85,6 +99,35 @@ export default function Wall(props) {
             </Text>{" "}
             have something to say...
           </Box>
+        )}
+
+        {capt.length > 1 && (
+          <Flex id="hide-for-pdf" mt="1.5rem" mb="-2rem" gap="0.6rem" flexWrap="wrap">
+            {[
+              ["top", "most liked"],
+              ["new", "newest"],
+            ].map(([mode, label]) => (
+              <Box
+                as="button"
+                type="button"
+                key={mode}
+                onClick={() => setSortMode(mode)}
+                aria-pressed={sortMode === mode}
+                p="0.3rem 0.9rem"
+                borderRadius="3rem"
+                fontSize="0.9rem"
+                fontWeight="600"
+                border="1px solid"
+                borderColor={sortMode === mode ? "rgba(255, 255, 255, 0.6)" : "rgba(255, 255, 255, 0.25)"}
+                bgColor={sortMode === mode ? "rgba(255, 255, 255, 0.15)" : "rgba(255, 255, 255, 0.05)"}
+                color={sortMode === mode ? "white" : "#B3B3B3"}
+                transition="all 0.2s ease"
+                _hover={{ borderColor: "rgba(255, 255, 255, 0.5)", color: "white" }}
+              >
+                {label}
+              </Box>
+            ))}
+          </Flex>
         )}
 
         <Masonry

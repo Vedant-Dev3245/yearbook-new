@@ -3,10 +3,86 @@ import React from "react";
 import NominateCard from "./NominateCard";
 import ReqCard from "./ReqCard";
 import axios from "axios";
+import { FaHeart } from "react-icons/fa";
+import { FiFeather } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+
+// "5m ago", "3h ago", "2d ago"
+function timeAgo(date) {
+  const secs = Math.max(0, Math.floor((Date.now() - new Date(date).getTime()) / 1000));
+  if (secs < 60) return "just now";
+  const mins = Math.floor(secs / 60);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
+
+// One line in the "recent activity" list.
+function ActivityCard({ item, onClick }) {
+  const unread = !item.readAt;
+  const isLike = item.type === "caption_like";
+  const target = item.caption && item.caption.target ? item.caption.target.name.toLowerCase() : "a friend";
+  const actor = item.actor ? item.actor.name.toLowerCase() : "someone";
+
+  return (
+    <Flex
+      onClick={onClick}
+      cursor="pointer"
+      bg="#151515"
+      p="1rem"
+      color="#DCEDFB"
+      w="100%"
+      alignItems="center"
+      gap="1rem"
+      opacity="0.8"
+      backdropFilter="blur(40px)"
+      borderRadius="20px"
+      border="1px solid"
+      borderColor={unread ? "rgba(255, 255, 255, 0.5)" : "rgba(255, 255, 255, 0.2)"}
+      boxShadow="0px 4px 4px rgba(0, 0, 0, 0.25)"
+      transition="all 0.2s ease"
+      _hover={{ opacity: 1 }}
+    >
+      <Flex
+        flexShrink={0}
+        h="2.4rem"
+        w="2.4rem"
+        borderRadius="50%"
+        alignItems="center"
+        justifyContent="center"
+        bgColor="rgba(255, 255, 255, 0.05)"
+        border="1px solid rgba(255, 255, 255, 0.25)"
+      >
+        {isLike ? <FaHeart color="#FF6187" fontSize="1rem" /> : <FiFeather color="#2094FF" fontSize="1.1rem" />}
+      </Flex>
+      <Box flex="1" lineHeight="1.3rem" fontSize="1rem" color="#FFFFFF" fontWeight="400">
+        {isLike ? (
+          <>
+            your caption for{" "}
+            <Text as="span" fontWeight="700">{target}</Text>{" "}
+            {item.count === 1 ? "got its first like" : `got ${item.count} likes`}
+          </>
+        ) : (
+          <>
+            <Text as="span" fontWeight="700">{actor}</Text> wrote on your wall
+          </>
+        )}
+        <Text fontSize="0.85rem" color="#B3B3B3" fontWeight="600">
+          {timeAgo(item.updatedAt || item.createdAt)}
+        </Text>
+      </Box>
+      {unread && <Box flexShrink={0} h="0.6rem" w="0.6rem" borderRadius="50%" bg="#FF6187" />}
+    </Flex>
+  );
+}
 
 export default function Nominate(props) {
   const nominateArray = props.nominatedBy;
   const [isSmallerThan800] = useMediaQuery("(max-width:800px)");
+  const navigate = useNavigate();
+  const activity = props.activity || [];
+  const showNominations = props.senior !== false; // juniors only get the activity list
 
   const cardsNom = Array.from(nominateArray).map((person) => {
     return (
@@ -50,6 +126,40 @@ export default function Nominate(props) {
 
   return (
     <Box width="90%" marginInline="auto">
+      {activity.length > 0 && (
+        <Box pb="4rem">
+          <Box fontSize={isSmallerThan800 ? "1.5rem" : "3rem"} fontWeight="800">
+            recent{" "}
+            <Text display={"inline"} fontFamily="EB Garamond" fontStyle="italic">
+              activity
+            </Text>
+          </Box>
+          <Flex
+            direction="column"
+            gap="1rem"
+            mt="2rem"
+            w={isSmallerThan800 ? "100%" : "60%"}
+          >
+            {activity.map((item) => (
+              <ActivityCard
+                key={item.notificationID}
+                item={item}
+                onClick={() =>
+                  item.type === "caption_like" && item.caption
+                    ? navigate(`/profile/${item.caption.targetID}`)
+                    : props.onOpenWall && props.onOpenWall()
+                }
+              />
+            ))}
+          </Flex>
+        </Box>
+      )}
+      {!showNominations && activity.length === 0 && (
+        <Text color="#B3B3B3" fontSize="1.2rem" fontWeight="600">
+          nothing here yet. when friends like the captions you write, you'll see it here.
+        </Text>
+      )}
+      {showNominations && (<>
       <Box fontSize={isSmallerThan800 ? "1.5rem" : "3rem"} fontWeight="800">
         {nominateArray.length === 0
           ? "do you want to write some"
@@ -89,6 +199,7 @@ export default function Nominate(props) {
       >
         {cardsReq}
       </Flex>
+      </>)}
     </Box>
   );
 }

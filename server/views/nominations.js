@@ -8,6 +8,7 @@ const {Commitment} = require('../models/commitment');
 const {Nomination} = require('../models/nomination');
 const {Poll} = require('../models/poll');
 const {Vote} = require('../models/vote');
+const {Like} = require('../models/like');
 
 const jwt = require("jsonwebtoken");
 const Filter = require("bad-words");
@@ -60,6 +61,8 @@ const sendRequest = async (req, res) => {
         if(caption_record.caption !== caption){
             caption_record.caption = caption;
             await caption_record.save();
+            // new words -> the old likes no longer apply
+            await Like.destroy({ where: { captionID: caption_record.captionID } });
         }
       console.log("[sendRequest Route] Request has already been sent by " + sender.name + " to " + target.name);
       console.log(caption_record.toJSON())
