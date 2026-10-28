@@ -2,24 +2,19 @@ import { thumb } from "../cloudinary";
 import React from "react";
 import "../index.css";
 
+// The image people download / share as an Instagram story (9:16).
 const Template = (props) => {
   const styleMainMain = {
     backgroundImage:
       "linear-gradient(45deg, #050505, #07111B, #130D1F, #130C1E, #020202)",
   };
-  const styleMain = {
-    // opacity:"0",
-  };
 
-  const stylep = {
-    textAlign: "left",
-    color: "#DCEDFB",
-    fontFamily: "Gilmer",
-    fontSize: "15px",
-    fontStyle: "normal",
-    fontWeight: "700",
-    lineHeight: "normal",
-    letterSpacing: "0.48px",
+  // keeps the poster in story shape, whatever the quote length
+  const styleMain = {
+    minHeight: "calc(28rem * 16 / 9)",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
   };
 
   const styleTitle = {
@@ -43,43 +38,141 @@ const Template = (props) => {
     lineHeight: "normal",
     marginLeft: "20%",
     marginTop: "-15px",
-    marginBottom: "20px"
+    marginBottom: "14px",
   };
+
+  // "written for ..." (the labels are tiny on purpose, the quote is the hero)
+  const styleWrittenFor = {
+    textAlign: "center",
+    padding: "0 12%",
+  };
+  const styleWrittenForLabel = {
+    color: "#8a8a93",
+    fontFamily: "Gilmer",
+    fontSize: "9px",
+    fontWeight: "600",
+    letterSpacing: "1.2px",
+    margin: "0",
+  };
+  const styleWrittenForName = {
+    color: "#FFF",
+    fontFamily: "Gilmer",
+    fontSize: "16px",
+    fontWeight: "700",
+    lineHeight: "1.2",
+    textTransform: "lowercase",
+    margin: "2px 0 0",
+    overflowWrap: "anywhere",
+  };
+
+  // the card sits in the free space in the middle and is only as tall as the quote
   const styleContentBoxBox = {
-    padding: "12%",
-    paddingTop: props.recipient ? "0" : "5%",
-    paddingBottom: "10%",
+    flex: "1",
+    display: "flex",
+    alignItems: "center",
+    padding: "6% 10%",
   };
   const styleContentBox = {
-    gridTemplateColumns: "1fr 1fr",
+    width: "100%",
     borderRadius: "7.2px",
     backgroundColor: "rgba(21,21,21,0.3)",
     boxShadow: "1px 1px 1px rgb(255, 255, 255, 0.2)",
     border: "solid 1px rgb(255, 255, 255, 0.1)",
-  };
-  const styleContent = {
-    display: "flex",
-    justifyContent: "space-between",
-  };
-  const styleAncientImage = {
-    width: "30px",
-    marginLeft: "10%",
-    marginTop: "10%",
-  };
-  const styleAncientImageimg = {
-    height: "120px",
+    padding: "16px 18px 12px",
   };
 
-  const stylepDiv = {
-    marginTop: "18%",
-    marginRight: "10%",
-    width: "60%",
+  const styleAuthor = {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
   };
-  const styleLogo = {
-    width: "36px",
-    marginLeft: "80%",
-    marginBottom: "10%",
+  const styleAuthorImage = {
+    height: "44px",
+    width: "44px",
+    flexShrink: 0,
+    borderRadius: "50%",
+    objectFit: "cover",
+    border: "1px solid #2f2f3f",
   };
+  const styleFromLabel = {
+    color: "#8a8a93",
+    fontFamily: "Gilmer",
+    fontSize: "8px",
+    fontWeight: "600",
+    letterSpacing: "1px",
+    margin: "0",
+  };
+  const styleAuthorName = {
+    color: "#DCEDFB",
+    fontFamily: "Gilmer",
+    fontSize: "13px",
+    fontWeight: "700",
+    textTransform: "lowercase",
+    margin: "0",
+    lineHeight: "1.25",
+  };
+  const styleAuthorId = {
+    color: "grey",
+    fontFamily: "Gilmer",
+    fontSize: "9px",
+    fontWeight: "600",
+    textTransform: "uppercase",
+    margin: "0",
+  };
+
+  // quote marks on the left stretch down to the end of the quote
+  const styleQuoteRow = {
+    display: "flex",
+    gap: "14px",
+    marginTop: "16px",
+  };
+  const styleQuoteMarkCol = {
+    width: "26px",
+    flexShrink: 0,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  };
+  const styleQuoteMarkCrop = {
+    height: "22px",
+    width: "26px",
+    overflow: "hidden",
+  };
+  const styleQuoteMarkImg = {
+    width: "26px",
+    height: "95px",
+    display: "block",
+  };
+  const styleQuoteLine = {
+    flex: "1",
+    minHeight: "14px",
+    width: "1.5px",
+    marginTop: "6px",
+    backgroundColor: "#DCEDFB",
+  };
+  const styleQuoteText = {
+    flex: "1",
+    textAlign: "left",
+    color: "#DCEDFB",
+    fontFamily: "Gilmer",
+    fontSize: "17px",
+    fontWeight: "700",
+    lineHeight: "1.4",
+    letterSpacing: "0.3px",
+    margin: "0",
+    overflowWrap: "anywhere",
+    whiteSpace: "pre-wrap",
+  };
+
+  const styleLogoRow = {
+    display: "flex",
+    justifyContent: "flex-end",
+    marginTop: "8px",
+  };
+  const styleLogoImg = {
+    width: "34px",
+  };
+
   const stylePlaceHolder = {
     color: "rgba(250, 250, 250, 0.75)",
     textAlign: "center",
@@ -88,8 +181,9 @@ const Template = (props) => {
     fontStyle: "normal",
     fontWeight: "600",
     lineHeight: "90.02%",
-    padding: "10%",
+    padding: "8% 10%",
   };
+
   const ellipseTop = {
     position: "top left",
     width: "100px",
@@ -107,76 +201,6 @@ const Template = (props) => {
     right: "1rem",
     bottom: "0",
   };
-  const styleNameImage = {
-    display: "flex",
-    marginTop: "1rem",
-  };
-  const styleNameImageImage = {
-    height: "4rem",
-    width: "4rem",
-    borderRadius: "50%",
-    marginLeft: "1.5rem",
-  };
-  const styleNameImageImageimg = {
-    height: "4rem",
-    border: "1px solid #2f2f3f",
-    width: "4rem",
-    borderRadius: "50%",
-  };
-  const styleNameImageNameBitsID = {
-    display: "flex",
-    flexDirection: "column",
-    marginLeft: "2rem",
-    marginTop: "0.5rem",
-  };
-  const styleWrittenFor = {
-    textAlign: "center",
-    padding: "0 12%",
-    marginBottom: "6%",
-  };
-  const styleWrittenForLabel = {
-    color: "#888",
-    fontFamily: "Gilmer",
-    fontSize: "11px",
-    fontWeight: "600",
-    letterSpacing: "1px",
-    margin: "0",
-  };
-  const styleWrittenForName = {
-    color: "#FFF",
-    fontFamily: "Gilmer",
-    fontSize: "26px",
-    fontWeight: "700",
-    lineHeight: "1.2",
-    textTransform: "lowercase",
-    margin: "2px 0 0",
-    overflowWrap: "anywhere",
-  };
-  const styleWrittenForLine = {
-    width: "28px",
-    height: "1px",
-    backgroundColor: "rgba(255, 255, 255, 0.4)",
-    margin: "12px auto 0",
-  };
-  const styleFromLabel = {
-    color: "#888",
-    fontFamily: "Gilmer",
-    fontSize: "10px",
-    fontWeight: "600",
-    textAlign: "center",
-    margin: "0",
-  };
-  const styleNameImageName = {
-    fontSize: "14px",
-    textTransform: "lowercase",
-    margin: "0",
-    textAlign: "center",
-  };
-  const styleNameImageBitsID = {
-    marginTop: "1rem",
-    textTransform: "uppercase",
-    textAlign: "center",
-  };
 
   return (
     <div className="template" style={styleMainMain}>
@@ -191,67 +215,64 @@ const Template = (props) => {
       </div>
 
       <div className="templateSmall" style={styleMain}>
-        <div className="yearbook-title" style={styleTitle}>
-          <h1 style={styleYearbook}>yearbook</h1>
-          <h1 style={styleQuote}>quotes</h1>
-        </div>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Imperial+Script&display=swap"
-          rel="stylesheet"
-        />
-        {props.recipient && (
-          <div className="writtenFor" style={styleWrittenFor}>
-            <p style={styleWrittenForLabel}>written for</p>
-            <p style={styleWrittenForName}>{props.recipient}</p>
-            <div style={styleWrittenForLine}></div>
+        <div>
+          <div className="yearbook-title" style={styleTitle}>
+            <h1 style={styleYearbook}>yearbook</h1>
+            <h1 style={styleQuote}>quotes</h1>
           </div>
-        )}
+          <link
+            href="https://fonts.googleapis.com/css2?family=Imperial+Script&display=swap"
+            rel="stylesheet"
+          />
+          {props.recipient && (
+            <div className="writtenFor" style={styleWrittenFor}>
+              <p style={styleWrittenForLabel}>written for</p>
+              <p style={styleWrittenForName}>{props.recipient}</p>
+            </div>
+          )}
+        </div>
+
         <div style={styleContentBoxBox}>
           <div style={styleContentBox}>
-            <div className="name-image" style={styleNameImage}>
-              <div className="image" style={styleNameImageImage}>
-                <img
-                  alt="caption"
-                  style={styleNameImageImageimg}
-                  src={thumb(props.img, 600)}
-                ></img>
-                {/* <img style={styleNameImageImageimg} src="../images/shwetabh.png"></img> */}
-              </div>
-              <div className="name" style={styleNameImageNameBitsID}>
+            <div className="name-image" style={styleAuthor}>
+              <img
+                alt="caption"
+                style={styleAuthorImage}
+                src={thumb(props.img, 600)}
+              ></img>
+              <div className="name">
                 <p style={styleFromLabel}>from</p>
-                <div className="namename" style={styleNameImageName}>
-                  <p>{props.name}</p>
-                </div>
-                <div className="namebitsId" style={styleNameImageBitsID}>
-                  <p
-                    style={{
-                      fontSize: "10px",
-                      marginTop: "-18px",
-                      color: "grey",
-                    }}
-                  >
-                    {props.bitsId}
-                  </p>
-                </div>
+                <p style={styleAuthorName}>{props.name}</p>
+                <p style={styleAuthorId}>{props.bitsId}</p>
               </div>
             </div>
-            <div className="theactualquote" style={styleContent}>
-              <div className="ancientImage" style={styleAncientImage}>
-                <img
-                  style={styleAncientImageimg}
-                  src="../images/imageancient.png"
-                  alt="immgancient"
-                ></img>
+
+            <div className="theactualquote" style={styleQuoteRow}>
+              <div className="ancientImage" style={styleQuoteMarkCol}>
+                <div style={styleQuoteMarkCrop}>
+                  <img
+                    style={styleQuoteMarkImg}
+                    src="../images/imageancient.png"
+                    alt="immgancient"
+                  ></img>
+                </div>
+                <div style={styleQuoteLine}></div>
               </div>
-              <div className="quotesss" style={stylepDiv}>
-                <p style={stylep}>{props.caption}</p>
+              <div className="quotesss" style={{ flex: 1 }}>
+                <p style={styleQuoteText}>{props.caption}</p>
               </div>
             </div>
-            <div className="logo" style={styleLogo}>
-              <img src="../images/sarclogoimg.png" alt="logo"></img>
+
+            <div className="logo" style={styleLogoRow}>
+              <img
+                style={styleLogoImg}
+                src="../images/sarclogoimg.png"
+                alt="logo"
+              ></img>
             </div>
           </div>
         </div>
+
         <div className="placeHolder" style={stylePlaceHolder}>
           <h3>opt in for your physical copy of the yearbook now!</h3>
         </div>

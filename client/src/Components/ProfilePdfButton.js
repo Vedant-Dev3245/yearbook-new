@@ -64,14 +64,20 @@ export default function ProfilePdfButton({ profileRef, interactRef, onComplete }
             }
           }
 
-          // 2. SARC logo at the top right corner
+          // 2. SARC logo at the right, level with the top of the profile photo
           if (logoData) {
             const logoWidth = Math.max(40, Math.round(root.offsetWidth * 0.06));
             root.style.position = "relative";
+            let top = 40;
+            if (photo) {
+              const photoTop = photo.getBoundingClientRect().top;
+              const rootTop = root.getBoundingClientRect().top;
+              if (photoTop - rootTop > 0) top = Math.round(photoTop - rootTop);
+            }
             const logo = clonedDoc.createElement("img");
             logo.src = logoData;
             logo.alt = "SARC";
-            logo.style.cssText = `position:absolute;top:14px;right:5%;width:${logoWidth}px;height:auto;z-index:5;`;
+            logo.style.cssText = `position:absolute;top:${top}px;right:5%;width:${logoWidth}px;height:auto;z-index:5;`;
             root.appendChild(logo);
           }
         },

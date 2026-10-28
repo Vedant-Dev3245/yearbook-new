@@ -66,7 +66,7 @@ const getNotifications = async (req, res) => {
                     model: Caption,
                     as: "caption",
                     attributes: ["captionID", "targetID", "status"],
-                    include: [{ model: User, as: "target", attributes: ["userID", "name"] }],
+                    include: [{ model: User, as: "target", attributes: ["userID", "name", "imageUrl"] }],
                 },
             ],
         });

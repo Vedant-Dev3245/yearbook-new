@@ -31,6 +31,8 @@ function ActivityCard({ item, unread, onClick }) {
   const isLike = item.type === "caption_like";
   const target = item.caption && item.caption.target ? item.caption.target.name.toLowerCase() : "a friend";
   const actor = item.actor ? item.actor.name.toLowerCase() : "someone";
+  const photoOwner = isLike ? item.caption && item.caption.target : item.actor;
+  const photo = photoOwner && photoOwner.imageUrl;
 
   return (
     <Flex
@@ -52,12 +54,13 @@ function ActivityCard({ item, unread, onClick }) {
       _hover={{ opacity: 1 }}
     >
       {unread && <NewDot />}
-      {/* writer's photo with a small badge for what happened (heart = like, feather = wrote) */}
+      {/* photo with a small badge for what happened (heart = like, feather = wrote).
+          likes are anonymous, so they show the photo of the person the quote was for */}
       <Box position="relative" flexShrink={0} h="2.6rem" w="2.6rem">
-        {item.actor && item.actor.imageUrl ? (
+        {photo ? (
           <Image
-            src={thumb(item.actor.imageUrl, 100)}
-            alt={actor}
+            src={thumb(photo, 100)}
+            alt={isLike ? target : actor}
             h="100%"
             w="100%"
             borderRadius="50%"
@@ -71,28 +74,28 @@ function ActivityCard({ item, unread, onClick }) {
             borderRadius="50%"
             alignItems="center"
             justifyContent="center"
-            bgColor="rgba(255, 255, 255, 0.08)"
+            bgColor="rgba(255, 255, 255, 0.05)"
             border="1px solid rgba(255, 255, 255, 0.25)"
-            fontWeight="700"
-            fontSize="1rem"
           >
-            {actor.charAt(0)}
+            {isLike ? <FaHeart color="#FF6187" fontSize="1rem" /> : <FiFeather color="#2094FF" fontSize="1.1rem" />}
           </Flex>
         )}
-        <Flex
-          position="absolute"
-          right="-4px"
-          bottom="-4px"
-          h="1.2rem"
-          w="1.2rem"
-          borderRadius="50%"
-          alignItems="center"
-          justifyContent="center"
-          bgColor={isLike ? "#FF6187" : "#2094FF"}
-          border="2px solid #151515"
-        >
-          {isLike ? <FaHeart color="#fff" fontSize="0.55rem" /> : <FiFeather color="#fff" fontSize="0.65rem" />}
-        </Flex>
+        {photo && (
+          <Flex
+            position="absolute"
+            right="-4px"
+            bottom="-4px"
+            h="1.2rem"
+            w="1.2rem"
+            borderRadius="50%"
+            alignItems="center"
+            justifyContent="center"
+            bgColor={isLike ? "#FF6187" : "#2094FF"}
+            border="2px solid #151515"
+          >
+            {isLike ? <FaHeart color="#fff" fontSize="0.55rem" /> : <FiFeather color="#fff" fontSize="0.65rem" />}
+          </Flex>
+        )}
       </Box>
       <Box flex="1" lineHeight="1.3rem" fontSize="1rem" color="#FFFFFF" fontWeight="400">
         {isLike ? (
