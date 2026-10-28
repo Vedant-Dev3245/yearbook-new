@@ -147,17 +147,6 @@ export default function NominateCard(props) {
             {props.name}
           </Text>
         </Flex>
-        <Text
-          fontSize="0.7rem"
-          fontWeight="600"
-          color="#B3B3B3"
-          border="1px solid rgba(255, 255, 255, 0.25)"
-          borderRadius="3rem"
-          p="0.15rem 0.6rem"
-          whiteSpace="nowrap"
-        >
-          wants you to write a quote
-        </Text>
       </Flex>
       <Box
         lineHeight="1.3rem"
