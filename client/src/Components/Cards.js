@@ -102,6 +102,7 @@ export default function Cards(props) {
           name={props.name}
           img={props.img}
           bitsId={props.bitsId}
+          recipient={props.recipient}
         />
       )}
       {/* template for insta story */}

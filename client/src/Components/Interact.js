@@ -359,6 +359,7 @@ const Interact = forwardRef((props, ref) => {
           ownProfile={ownProfile}
           makeNominActive={makeNominActive}
           captions={props.captions}
+          name={props.name}
           bitsId={props.bitsId}
           commitments={props.commitments}
           senior={props.senior}

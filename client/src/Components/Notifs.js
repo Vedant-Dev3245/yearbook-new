@@ -1,4 +1,4 @@
-import { Box, Text, Flex, useMediaQuery } from "@chakra-ui/react";
+import { Box, Text, Flex, Image, useMediaQuery } from "@chakra-ui/react";
 import React from "react";
 import NominateCard from "./NominateCard";
 import ReqCard from "./ReqCard";
@@ -6,6 +6,7 @@ import { FaHeart } from "react-icons/fa";
 import { FiFeather } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import NewDot from "./NewDot";
+import { thumb } from "../cloudinary";
 
 // Identifies one notification card. Interact uses these to remember which cards
 // already got their "new" dot, so the dot only shows on the first visit.
@@ -51,18 +52,48 @@ function ActivityCard({ item, unread, onClick }) {
       _hover={{ opacity: 1 }}
     >
       {unread && <NewDot />}
-      <Flex
-        flexShrink={0}
-        h="2.4rem"
-        w="2.4rem"
-        borderRadius="50%"
-        alignItems="center"
-        justifyContent="center"
-        bgColor="rgba(255, 255, 255, 0.05)"
-        border="1px solid rgba(255, 255, 255, 0.25)"
-      >
-        {isLike ? <FaHeart color="#FF6187" fontSize="1rem" /> : <FiFeather color="#2094FF" fontSize="1.1rem" />}
-      </Flex>
+      {/* writer's photo with a small badge for what happened (heart = like, feather = wrote) */}
+      <Box position="relative" flexShrink={0} h="2.6rem" w="2.6rem">
+        {item.actor && item.actor.imageUrl ? (
+          <Image
+            src={thumb(item.actor.imageUrl, 100)}
+            alt={actor}
+            h="100%"
+            w="100%"
+            borderRadius="50%"
+            objectFit="cover"
+            border="1px solid rgba(255, 255, 255, 0.25)"
+          />
+        ) : (
+          <Flex
+            h="100%"
+            w="100%"
+            borderRadius="50%"
+            alignItems="center"
+            justifyContent="center"
+            bgColor="rgba(255, 255, 255, 0.08)"
+            border="1px solid rgba(255, 255, 255, 0.25)"
+            fontWeight="700"
+            fontSize="1rem"
+          >
+            {actor.charAt(0)}
+          </Flex>
+        )}
+        <Flex
+          position="absolute"
+          right="-4px"
+          bottom="-4px"
+          h="1.2rem"
+          w="1.2rem"
+          borderRadius="50%"
+          alignItems="center"
+          justifyContent="center"
+          bgColor={isLike ? "#FF6187" : "#2094FF"}
+          border="2px solid #151515"
+        >
+          {isLike ? <FaHeart color="#fff" fontSize="0.55rem" /> : <FiFeather color="#fff" fontSize="0.65rem" />}
+        </Flex>
+      </Box>
       <Box flex="1" lineHeight="1.3rem" fontSize="1rem" color="#FFFFFF" fontWeight="400">
         {isLike ? (
           <>

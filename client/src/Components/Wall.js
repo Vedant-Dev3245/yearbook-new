@@ -31,6 +31,7 @@ export default function Wall(props) {
         caption={person.caption}
         img={person.writer.imageUrl}
         bitsId={person.writer.bitsId}
+        recipient={props.name}
         captionID={person.captionID}
         likeCount={person.likeCount}
         likedByMe={person.likedByMe}

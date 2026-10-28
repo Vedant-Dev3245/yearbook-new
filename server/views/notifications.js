@@ -61,7 +61,7 @@ const getNotifications = async (req, res) => {
             order: [["updatedAt", "DESC"]],
             limit: 30,
             include: [
-                { model: User, as: "actor", attributes: ["userID", "name", "bitsId"] },
+                { model: User, as: "actor", attributes: ["userID", "name", "bitsId", "imageUrl"] },
                 {
                     model: Caption,
                     as: "caption",

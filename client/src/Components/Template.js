@@ -47,7 +47,7 @@ const Template = (props) => {
   };
   const styleContentBoxBox = {
     padding: "12%",
-    paddingTop: "5%",
+    paddingTop: props.recipient ? "0" : "5%",
     paddingBottom: "10%",
   };
   const styleContentBox = {
@@ -129,6 +129,43 @@ const Template = (props) => {
     marginLeft: "2rem",
     marginTop: "0.5rem",
   };
+  const styleWrittenFor = {
+    textAlign: "center",
+    padding: "0 12%",
+    marginBottom: "6%",
+  };
+  const styleWrittenForLabel = {
+    color: "#888",
+    fontFamily: "Gilmer",
+    fontSize: "11px",
+    fontWeight: "600",
+    letterSpacing: "1px",
+    margin: "0",
+  };
+  const styleWrittenForName = {
+    color: "#FFF",
+    fontFamily: "Gilmer",
+    fontSize: "26px",
+    fontWeight: "700",
+    lineHeight: "1.2",
+    textTransform: "lowercase",
+    margin: "2px 0 0",
+    overflowWrap: "anywhere",
+  };
+  const styleWrittenForLine = {
+    width: "28px",
+    height: "1px",
+    backgroundColor: "rgba(255, 255, 255, 0.4)",
+    margin: "12px auto 0",
+  };
+  const styleFromLabel = {
+    color: "#888",
+    fontFamily: "Gilmer",
+    fontSize: "10px",
+    fontWeight: "600",
+    textAlign: "center",
+    margin: "0",
+  };
   const styleNameImageName = {
     fontSize: "14px",
     textTransform: "lowercase",
@@ -162,6 +199,13 @@ const Template = (props) => {
           href="https://fonts.googleapis.com/css2?family=Imperial+Script&display=swap"
           rel="stylesheet"
         />
+        {props.recipient && (
+          <div className="writtenFor" style={styleWrittenFor}>
+            <p style={styleWrittenForLabel}>written for</p>
+            <p style={styleWrittenForName}>{props.recipient}</p>
+            <div style={styleWrittenForLine}></div>
+          </div>
+        )}
         <div style={styleContentBoxBox}>
           <div style={styleContentBox}>
             <div className="name-image" style={styleNameImage}>
@@ -174,6 +218,7 @@ const Template = (props) => {
                 {/* <img style={styleNameImageImageimg} src="../images/shwetabh.png"></img> */}
               </div>
               <div className="name" style={styleNameImageNameBitsID}>
+                <p style={styleFromLabel}>from</p>
                 <div className="namename" style={styleNameImageName}>
                   <p>{props.name}</p>
                 </div>
