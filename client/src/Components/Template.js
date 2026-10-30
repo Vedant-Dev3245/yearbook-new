@@ -9,7 +9,7 @@ const Template = (props) => {
       "linear-gradient(45deg, #050505, #07111B, #130D1F, #130C1E, #020202)",
   };
 
-  // keeps the poster in story shape, whatever the quote length
+  // keeps the poster in story shape; the title + card sit as one group in the middle
   const styleMain = {
     minHeight: "calc(28rem * 16 / 9)",
     display: "flex",
@@ -23,11 +23,12 @@ const Template = (props) => {
   const styleYearbook = {
     color: "#FFF",
     fontFamily: "Gilmer",
-    fontSize: "32px",
+    fontSize: "34px",
     textAlign: "center",
     marginLeft: "-5%",
     width: "100%",
     fontWeight: "800",
+    margin: "0 0 0 -5%",
   };
   const styleQuote = {
     color: "#FFF",
@@ -38,57 +39,52 @@ const Template = (props) => {
     lineHeight: "normal",
     marginLeft: "20%",
     marginTop: "-15px",
-    marginBottom: "14px",
+    marginBottom: "0",
   };
 
-  // "written for ..." (the labels are tiny on purpose, the quote is the hero)
+  // "written for ..." (tiny label, name a bit bigger, quote stays the hero)
   const styleWrittenFor = {
     textAlign: "center",
     padding: "0 12%",
+    marginTop: "30px",
   };
   const styleWrittenForLabel = {
     color: "#8a8a93",
     fontFamily: "Gilmer",
-    fontSize: "9px",
-    fontWeight: "600",
+    fontSize: "10px",
+    fontWeight: "700",
     letterSpacing: "1.2px",
     margin: "0",
   };
   const styleWrittenForName = {
     color: "#FFF",
     fontFamily: "Gilmer",
-    fontSize: "16px",
+    fontSize: "19px",
     fontWeight: "700",
     lineHeight: "1.2",
     textTransform: "lowercase",
-    margin: "2px 0 0",
+    margin: "3px 0 0",
     overflowWrap: "anywhere",
   };
 
-  // the card sits in the free space in the middle and is only as tall as the quote
-  const styleContentBoxBox = {
-    flex: "1",
-    display: "flex",
-    alignItems: "center",
-    padding: "6% 10%",
-  };
+  // the card is only as tall as the quote
   const styleContentBox = {
-    width: "100%",
-    borderRadius: "7.2px",
+    margin: "26px 34px 0",
+    borderRadius: "8px",
     backgroundColor: "rgba(21,21,21,0.3)",
     boxShadow: "1px 1px 1px rgb(255, 255, 255, 0.2)",
-    border: "solid 1px rgb(255, 255, 255, 0.1)",
-    padding: "16px 18px 12px",
+    border: "solid 1px rgb(255, 255, 255, 0.12)",
+    padding: "22px 22px 14px",
   };
 
   const styleAuthor = {
     display: "flex",
     alignItems: "center",
-    gap: "12px",
+    gap: "13px",
   };
   const styleAuthorImage = {
-    height: "44px",
-    width: "44px",
+    height: "50px",
+    width: "50px",
     flexShrink: 0,
     borderRadius: "50%",
     objectFit: "cover",
@@ -97,73 +93,73 @@ const Template = (props) => {
   const styleFromLabel = {
     color: "#8a8a93",
     fontFamily: "Gilmer",
-    fontSize: "8px",
-    fontWeight: "600",
+    fontSize: "9px",
+    fontWeight: "700",
     letterSpacing: "1px",
     margin: "0",
   };
   const styleAuthorName = {
     color: "#DCEDFB",
     fontFamily: "Gilmer",
-    fontSize: "13px",
+    fontSize: "15px",
     fontWeight: "700",
     textTransform: "lowercase",
-    margin: "0",
+    margin: "1px 0 0",
     lineHeight: "1.25",
   };
   const styleAuthorId = {
     color: "grey",
     fontFamily: "Gilmer",
-    fontSize: "9px",
-    fontWeight: "600",
+    fontSize: "10px",
+    fontWeight: "700",
     textTransform: "uppercase",
-    margin: "0",
+    margin: "1px 0 0",
   };
 
-  // quote marks on the left stretch down to the end of the quote
+  // quote marks on the left, the line stretches down to the end of the quote
   const styleQuoteRow = {
     display: "flex",
     gap: "14px",
-    marginTop: "16px",
+    marginTop: "20px",
   };
   const styleQuoteMarkCol = {
-    width: "26px",
+    width: "28px",
     flexShrink: 0,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   };
   const styleQuoteMarkCrop = {
-    height: "22px",
-    width: "26px",
+    height: "24px",
+    width: "28px",
     overflow: "hidden",
   };
   const styleQuoteMarkImg = {
-    width: "26px",
-    height: "95px",
+    width: "28px",
+    height: "102px",
     display: "block",
   };
   const styleQuoteLine = {
     flex: "1",
-    minHeight: "14px",
+    minHeight: "30px",
     width: "1.5px",
     marginTop: "6px",
     backgroundColor: "#DCEDFB",
   };
   const styleQuoteText = {
-    flex: "1",
     textAlign: "left",
     color: "#DCEDFB",
     fontFamily: "Gilmer",
-    fontSize: "17px",
+    fontSize: "21px",
     fontWeight: "700",
-    lineHeight: "1.4",
+    lineHeight: "1.35",
     letterSpacing: "0.3px",
     margin: "0",
     overflowWrap: "anywhere",
     whiteSpace: "pre-wrap",
   };
 
+  // SARC logo, bottom right of the card
   const styleLogoRow = {
     display: "flex",
     justifyContent: "flex-end",
@@ -177,11 +173,11 @@ const Template = (props) => {
     color: "rgba(250, 250, 250, 0.75)",
     textAlign: "center",
     fontFamily: "Gilmer",
-    fontSize: "10px",
+    fontSize: "11px",
     fontStyle: "normal",
-    fontWeight: "600",
-    lineHeight: "90.02%",
-    padding: "8% 10%",
+    fontWeight: "700",
+    margin: "0",
+    padding: "0 10% 36px",
   };
 
   const ellipseTop = {
@@ -215,6 +211,9 @@ const Template = (props) => {
       </div>
 
       <div className="templateSmall" style={styleMain}>
+        {/* empty spacer: with space-between it keeps the group below in the middle */}
+        <div></div>
+
         <div>
           <div className="yearbook-title" style={styleTitle}>
             <h1 style={styleYearbook}>yearbook</h1>
@@ -224,15 +223,14 @@ const Template = (props) => {
             href="https://fonts.googleapis.com/css2?family=Imperial+Script&display=swap"
             rel="stylesheet"
           />
+
           {props.recipient && (
             <div className="writtenFor" style={styleWrittenFor}>
               <p style={styleWrittenForLabel}>written for</p>
               <p style={styleWrittenForName}>{props.recipient}</p>
             </div>
           )}
-        </div>
 
-        <div style={styleContentBoxBox}>
           <div style={styleContentBox}>
             <div className="name-image" style={styleAuthor}>
               <img
@@ -273,9 +271,9 @@ const Template = (props) => {
           </div>
         </div>
 
-        <div className="placeHolder" style={stylePlaceHolder}>
-          <h3>opt in for your physical copy of the yearbook now!</h3>
-        </div>
+        <p className="placeHolder" style={stylePlaceHolder}>
+          opt in for your physical copy of the yearbook now!
+        </p>
       </div>
     </div>
   );
